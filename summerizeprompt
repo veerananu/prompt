@@ -1,0 +1,2793 @@
+================================================================================
+                    PROMPT ENGINEERING GUIDE FOR DEVELOPERS
+================================================================================
+
+Hey! Here's a breakdown of prompt engineering fundamentals. Think of this as
+the "clean code" principles but for talking to LLMs.
+
+================================================================================
+PART 1: THE 8 CORE TIPS
+================================================================================
+
+TIP #1: USE XML TAGS
+--------------------
+Why: LLMs (especially Claude) were trained on XML-structured data. Tags help
+     the model distinguish instructions from data.
+
+How: Structure your prompt like this:
+
+    <role>You are a backend developer.</role>
+    <data>[paste your code or logs here]</data>
+    <task>Find the bug causing the null pointer exception.</task>
+
+Think of it like: Passing well-named parameters to a function instead of
+                  one giant concatenated string.
+
+
+TIP #2: BE SPECIFIC (THE "DIMWITTED INTERN" RULE)
+-------------------------------------------------
+Why: Vague words like "short" or "analyze" leave room for interpretation.
+     The model will guess, and it often guesses wrong.
+
+How: Quantify everything.
+
+    BAD:  "Keep it short."
+    GOOD: "Limit your response to exactly 3 bullet points."
+
+    BAD:  "Analyze this code."
+    GOOD: "List the top 5 performance bottlenecks in this code."
+
+Think of it like: Writing a detailed Jira ticket vs. "fix the bug"
+
+
+TIP #3: MIMIC THE DESIRED TONE
+------------------------------
+Why: LLMs are prediction engines. They complete the pattern you start.
+     Sloppy input = sloppy output. Professional input = professional output.
+
+How: Write your prompt in the same style you want the response.
+     Want a formal technical doc? Write the prompt formally.
+     Want casual Slack message? Write casually.
+
+
+TIP #4: PROOFREAD YOUR PROMPTS
+------------------------------
+Why: Typos and grammar errors are "noise." They signal low-quality context,
+     which pushes the model toward lower-quality output.
+
+How: Treat prompts like production code. Review before sending.
+     - Capitalize sentences
+     - Fix typos
+     - Use proper punctuation
+
+
+TIP #5: WRITE IN YOUR STRONGEST LANGUAGE
+----------------------------------------
+Why: If you write in a language you're not fluent in, you'll use weird
+     phrasing that confuses the model.
+
+How: Write in your native language, even if you want output in English.
+     The model translates better than you write awkward prompts.
+
+
+TIP #6: PREFILLING (PRIME THE RESPONSE)
+---------------------------------------
+Why: This skips the "Sure! I'd be happy to help..." filler and forces
+     the model into your desired format immediately.
+
+How: End your prompt by starting the response yourself.
+
+    Your prompt: "Convert this to JSON."
+    Add at the end: "Here is the JSON: {"
+
+    The model will continue from "{" directly into JSON format.
+
+Think of it like: Stubbing out a function signature so the AI fills in the body.
+
+
+TIP #7: AVOID NEGATIVE PROMPTING
+--------------------------------
+Why: "Don't think of a pink elephant" makes you think of it.
+     LLMs struggle with negation the same way.
+
+How: Tell the model what TO do, not what NOT to do.
+
+    BAD:  "Don't write long sentences."
+    GOOD: "Write short sentences under 15 words."
+
+    BAD:  "Don't use technical jargon."
+    GOOD: "Use simple language a non-developer would understand."
+
+
+TIP #8: PUT INSTRUCTIONS IN USER MESSAGE (NOT SYSTEM)
+-----------------------------------------------------
+Why: The model pays more attention to User messages for execution details.
+     System messages are better for high-level role setting.
+
+How:
+    System Prompt: "You are a senior Python developer." (simple)
+    User Prompt:   [All your actual instructions, data, XML tags] (complex)
+
+
+================================================================================
+PART 2: THE MASTER TEMPLATE (R-C-T-F FRAMEWORK)
+================================================================================
+
+Copy-paste this structure for most prompts:
+
+--------------------------------------------------------------------------------
+# ROLE
+Act as an expert [JOB TITLE, e.g., DevOps Engineer, Data Scientist].
+
+# CONTEXT
+I am working on [PROJECT/GOAL, e.g., debugging a production issue,
+writing API documentation].
+
+# TASK
+[SPECIFIC INSTRUCTION, e.g., Review this code and identify memory leaks].
+
+# CONSTRAINTS & FORMAT
+- Tone: [Professional / Casual / Technical]
+- Length: [e.g., under 200 words, 5 bullet points]
+- Output Format: [e.g., JSON, Markdown table, numbered list]
+--------------------------------------------------------------------------------
+
+
+================================================================================
+PART 3: CODING-SPECIFIC TEMPLATE (S.P.E.C. FRAMEWORK)
+================================================================================
+
+When asking for code, always specify:
+
+S - Stack:    Language, version, libraries (e.g., "Python 3.10 with Pandas")
+P - Pattern:  Style guide (e.g., "PEP8", "OOP", "Functional")
+E - Errors:   Edge cases and exception handling
+C - Comments: Request docstrings/inline comments
+
+--------------------------------------------------------------------------------
+# PROGRAMMING LANGUAGE
+Python 3.10
+
+# THE GOAL
+I need a function that parses a CSV file and removes duplicate emails.
+
+# REQUIREMENTS
+1. Robustness: Handle edge cases (empty file, malformed rows). Include try/catch.
+2. Style: Follow PEP8 conventions.
+3. Documentation: Include docstrings explaining the logic.
+4. Efficiency: Aim for O(n) time complexity.
+
+# INPUT DATA
+CSV with columns: name, email, signup_date
+
+# OUTPUT
+Provide the code in a single block, followed by a brief explanation
+of how it handles errors.
+--------------------------------------------------------------------------------
+
+
+================================================================================
+PART 4: PROMPT TYPES & WHEN TO USE THEM
+================================================================================
+
+TYPE              | USE CASE                  | PRO TIP
+------------------|---------------------------|----------------------------------
+Open-ended        | Brainstorming, explain    | Add constraints to focus it
+Specific/Closed   | Fact retrieval, lookup    | "Answer ONLY from provided text"
+Multiple choice   | Classification            | "Return only the letter"
+Hypothetical      | Scenario planning         | Ask AI to list assumptions first
+Opinion-based     | Debate, perspectives      | Give a specific stance to argue
+
+For code specifically:
+- Code Completion:   Ask for error handling + docstrings
+- Code Translation:  "Use idiomatic [target language] conventions"
+- Code Optimization: "Explain Big O before and after"
+- Code Debugging:    "Explain root cause, then fix, then prevention tip"
+
+
+================================================================================
+PART 5: DELIMITERS (SEPARATING SECTIONS)
+================================================================================
+
+Pick one style and be consistent:
+
+1. Triple Quotes (great for text blocks)
+   """
+   Your text here
+   """
+
+2. XML Tags (most reliable for complex prompts)
+   <input>data here</input>
+   <instructions>task here</instructions>
+
+3. Markdown Headers
+   ### Context
+   ### Task
+   ### Format
+
+4. Dashes (good for code blocks)
+   ---
+   code here
+   ---
+
+
+================================================================================
+PART 6: QUICK REFERENCE CHEAT SHEET
+================================================================================
+
+BEFORE SENDING ANY PROMPT, CHECK:
+
+[ ] Did I use tags/delimiters to separate sections?
+[ ] Did I specify exact numbers (word count, bullet count)?
+[ ] Did I define the output format (JSON, table, list)?
+[ ] Did I write in the tone I want back?
+[ ] Did I proofread for typos?
+[ ] Did I say what TO do (not what NOT to do)?
+[ ] Did I specify the audience?
+
+
+================================================================================
+PART 7: REAL EXAMPLE - BUG ANALYSIS PROMPT
+================================================================================
+
+BAD PROMPT:
+"Look at this error and tell me what's wrong."
+
+GOOD PROMPT:
+
+<context>
+I'm debugging a production issue in our Java Spring Boot application.
+The audience for this analysis is the backend team.
+</context>
+
+<task>
+Analyze the stack trace below. Identify:
+1. The root cause of the exception
+2. The exact line/method where it originates
+3. Two potential fixes ranked by implementation effort
+</task>
+
+<stack_trace>
+[paste your stack trace here]
+</stack_trace>
+
+<format>
+- Use a numbered list for the 3 items above
+- Keep each point under 50 words
+- Include code snippets for the fixes
+</format>
+
+
+================================================================================
+TL;DR - THE GOLDEN RULES
+================================================================================
+
+1. STRUCTURE   -> Use XML tags or delimiters
+2. SPECIFICITY -> Quantify everything, no vague words
+3. TONE        -> Write how you want the output to sound
+4. POSITIVE    -> Say what to do, not what to avoid
+5. ITERATE     -> First draft is rarely perfect, refine it
+
+================================================================================
+END OF GUIDE
+================================================================================
+
+
+================================================================================
+              PROMPT TEMPLATES & EXAMPLES - A DEVELOPER'S HANDBOOK
+================================================================================
+
+This guide gives you ready-to-use templates you can copy-paste immediately.
+Think of it as a "starter kit" for talking to LLMs effectively.
+
+================================================================================
+PART 1: UNDERSTANDING DELIMITERS (HOW TO SEPARATE SECTIONS)
+================================================================================
+
+Delimiters help the AI know where instructions end and data begins.
+Pick one style and stay consistent.
+
+--------------------------------------------------------------------------------
+DELIMITER TYPE        | BEST FOR                  | EXAMPLE
+--------------------------------------------------------------------------------
+Triple Quotes """     | Text blocks, articles     | """paste text here"""
+XML Tags <tag>        | Complex, structured       | <input>data</input>
+Markdown Headers ###  | Readable, organized       | ### Task
+Colons and Labels     | Simple key-value          | INSTRUCTION: do this
+Dashes ---            | Code blocks               | --- code here ---
+Brackets [ ]          | Parameters, options       | [TONE]: Professional
+BEGIN/END Markers     | Clear boundaries          | BEGIN TEXT ... END TEXT
+--------------------------------------------------------------------------------
+
+EXAMPLES OF EACH:
+
+1. TRIPLE QUOTES
+   ----------------
+   Summarize the following article:
+
+   """
+   Climate change is affecting global temperatures. Scientists report 
+   that 2024 was the hottest year on record.
+   """
+
+2. XML TAGS (Most reliable for complex prompts)
+   ----------------
+   You are a translator.
+
+   <input_text>
+   I love programming.
+   </input_text>
+
+   <target_language>
+   Spanish
+   </target_language>
+
+   Translate the input text to the target language.
+
+3. MARKDOWN HEADERS
+   ----------------
+   ### Role
+   You are a helpful teacher.
+
+   ### Task
+   Explain this concept simply.
+
+   ### Concept
+   Photosynthesis
+
+   ### Audience
+   10-year-old student
+
+4. COLONS AND LABELS
+   ----------------
+   INSTRUCTION: Fix the grammar errors.
+   TEXT: She go to school yesterday and buyed a book.
+   OUTPUT FORMAT: Corrected sentence only.
+
+5. DASHES
+   ----------------
+   Review the code below for bugs.
+
+   ---
+   def add(a, b)
+       return a + b
+   ---
+
+   List any errors found.
+
+6. BRACKETS
+   ----------------
+   Write an email with these details:
+
+   [TONE]: Professional
+   [PURPOSE]: Meeting request
+   [RECIPIENT]: Manager
+
+7. BEGIN/END MARKERS
+   ----------------
+   Extract all names from this text:
+
+   BEGIN TEXT
+   John met Sarah at the coffee shop. Later, Michael joined them.
+   END TEXT
+
+
+WHY DELIMITERS MATTER:
+
+   BAD (no delimiter):
+   Translate hello world to French
+
+   GOOD (with delimiter):
+   Translate the following to French:
+   """
+   hello world
+   """
+
+The delimiter prevents confusion when your text contains words that
+could be mistaken for instructions.
+
+
+================================================================================
+PART 2: THE 6 CORE PROMPTING TACTICS (STEP BY STEP)
+================================================================================
+
+TACTIC 1: SET CLEAR GOALS
+-------------------------
+What it means: Tell the AI EXACTLY what you want.
+
+Formula: [Action] + [Format] + [Length] + [Audience]
+
+BAD:  "Write something about APIs"
+GOOD: "Write a 5-bullet summary of REST APIs for junior developers"
+
+Examples:
+  - "Write a 200-word explanation for a beginner."
+  - "List the top 3 issues in bullet points."
+  - "Generate a table comparing options A, B, and C."
+
+
+TACTIC 2: GIVE CONTEXT
+----------------------
+What it means: Tell the AI the background and purpose.
+
+Why: More context = better, more relevant answers.
+
+BAD:  "Summarize this."
+GOOD: "This is a customer complaint email. Summarize the main issue
+       and the customer's desired resolution for our support team."
+
+Template:
+  "This is for [purpose/project]. The audience is [who].
+   Based on this, [task]."
+
+
+TACTIC 3: FEW-SHOT PROMPTING (SHOW EXAMPLES)
+--------------------------------------------
+What it means: Show 1-2 examples of what you want, then say "now do this."
+
+Why: You're teaching by demonstration.
+
+Example:
+  Input: Cat -> Output: A small furry mammal with whiskers.
+  Input: Dog -> Output: A domesticated canine known for loyalty.
+  
+  Now do the same for: Elephant.
+
+Use this when:
+  - You want a specific format
+  - You want a specific tone
+  - The AI keeps misunderstanding you
+
+
+TACTIC 4: BE SPECIFIC
+---------------------
+What it means: Remove all vague words. Quantify everything.
+
+BAD                              GOOD
+--------------------------       ----------------------------------
+"Keep it short"                  "Limit to 3 sentences"
+"Analyze this"                   "List the top 5 issues"
+"Make it better"                 "Improve readability and add comments"
+"Write about climate"            "Write 200 words arguing for carbon tax"
+
+
+TACTIC 5: ITERATE (TRY, FIX, TRY AGAIN)
+---------------------------------------
+What it means: The first answer is rarely perfect. Refine it.
+
+Common follow-ups:
+  - "Make it shorter."
+  - "Use simpler words."
+  - "Add a code example."
+  - "Focus more on [specific part]."
+  - "Remove the introduction, just give me the answer."
+
+This is normal. Expect 2-3 rounds of refinement.
+
+
+TACTIC 6: CHAIN-OF-THOUGHT (STEP-BY-STEP)
+-----------------------------------------
+What it means: Ask the AI to show its reasoning.
+
+When to use: Math, logic, debugging, decisions, complex analysis.
+
+Trigger phrases:
+  - "Solve this step by step."
+  - "Explain your reasoning."
+  - "First list your assumptions, then give the answer."
+  - "Walk me through your thought process."
+
+Example:
+  "To decide if we should use Strategy A or B, consider:
+   (1) Performance impact
+   (2) Implementation effort
+   (3) Maintainability
+   Then give a short conclusion with your recommendation."
+
+
+================================================================================
+PART 3: READY-TO-USE TEMPLATES (COPY-PASTE)
+================================================================================
+
+-----------------------------------------------------------------------------
+TEMPLATE 3.1: SUMMARIZE SOMETHING
+-----------------------------------------------------------------------------
+Summarize the following text as a [FORMAT] for a [AUDIENCE].
+Length: about [X words / Y bullets].
+
+Text:
+"""
+[paste text here]
+"""
+
+FILLED EXAMPLE:
+---------------
+Summarize the following text as a bulleted list for a non-technical manager.
+Length: about 5 bullets.
+
+Text:
+"""
+[paste error log / requirements doc / article here]
+"""
+
+-----------------------------------------------------------------------------
+TEMPLATE 3.2: EXPLAIN IN SIMPLE TERMS
+-----------------------------------------------------------------------------
+Explain [CONCEPT] in simple terms for a [AUDIENCE].
+
+Include:
+1. A short 2-3 sentence overview.
+2. A simple example.
+3. One real-world analogy.
+
+FILLED EXAMPLE:
+---------------
+Explain REST APIs in simple terms for a new backend developer.
+
+Include:
+1. A short 2-3 sentence overview.
+2. A simple example.
+3. One real-world analogy.
+
+-----------------------------------------------------------------------------
+TEMPLATE 3.3: REWRITE / IMPROVE WRITING
+-----------------------------------------------------------------------------
+Rewrite the following text to be more [QUALITY: clear/formal/concise]
+while keeping the same meaning.
+
+Audience: [WHO WILL READ IT]
+
+Text:
+"""
+[paste text here]
+"""
+
+FILLED EXAMPLE:
+---------------
+Rewrite the following text to be more professional and concise
+while keeping the same meaning.
+
+Audience: my manager
+
+Text:
+"""
+hey, i did that thing. let me know if it's ok or whatever
+"""
+
+-----------------------------------------------------------------------------
+TEMPLATE 3.4: GENERATE IDEAS
+-----------------------------------------------------------------------------
+Give me [NUMBER] ideas for [WHAT YOU NEED].
+
+Constraints:
+- Target audience: [WHO]
+- Style/tone: [FUNNY, SERIOUS, PRACTICAL, ETC.]
+- Other rules: [OPTIONAL]
+
+FILLED EXAMPLE:
+---------------
+Give me 10 ideas for YouTube videos about Java and Spring.
+
+Constraints:
+- Target audience: junior backend developers
+- Style: practical and beginner-friendly
+
+
+================================================================================
+PART 4: CODING-SPECIFIC TEMPLATES
+================================================================================
+
+-----------------------------------------------------------------------------
+TEMPLATE 4.1: CODE HELPER (JAVA / SPRING BATCH EXAMPLE)
+-----------------------------------------------------------------------------
+You are an expert Java and Spring Batch developer.
+
+Task: [DESCRIBE THE CODING TASK]
+
+Context: [BRIEFLY EXPLAIN YOUR PROJECT, STAGES, CONSTRAINTS]
+
+Requirements:
+1. Use [FRAMEWORKS/PATTERNS].
+2. Follow these rules: [E.G., GUARD CLAUSES, CONSISTENT LOGGING].
+3. Output: [JAVA CODE ONLY / CODE + EXPLANATION / BULLET LIST].
+
+Audience: An experienced Java developer.
+
+FILLED EXAMPLE:
+---------------
+You are an expert Java and Spring Batch developer.
+
+Task: Refactor this processor to improve readability and validation.
+
+Context: This is part of Stage 3 (left join on EMP_ID_NR) of an ETL-style
+job. We're migrating logic from DataStage.
+
+Requirements:
+1. Centralize guard clauses for argument validation.
+2. Use clear, predictable log messages.
+3. Output Java code and then a brief bullet explanation of the main changes.
+
+Audience: An experienced Java developer.
+
+-----------------------------------------------------------------------------
+TEMPLATE 4.2: EXPLAIN CODE
+-----------------------------------------------------------------------------
+Explain what this code does, step by step, for a [JUNIOR/SENIOR] developer.
+Then list 2-3 possible improvements.
+
+Code:
+```[LANGUAGE]
+[YOUR CODE HERE]
+```
+
+-----------------------------------------------------------------------------
+TEMPLATE 4.3: DEBUG AN ERROR
+-----------------------------------------------------------------------------
+I'm getting this error in [LANGUAGE/FRAMEWORK].
+
+1. First, explain in simple words what the error usually means.
+2. Then list possible causes in my case.
+3. Then show me a fixed version of the code if possible.
+
+Code:
+```
+[CODE HERE]
+```
+
+Error:
+```
+[ERROR MESSAGE HERE]
+```
+
+-----------------------------------------------------------------------------
+TEMPLATE 4.4: WRITE NEW CODE
+-----------------------------------------------------------------------------
+Write [LANGUAGE] code that does the following:
+[DESCRIBE THE TASK CLEARLY]
+
+Requirements:
+- Use [FRAMEWORK/LIBRARY] if needed.
+- Follow [STYLE: E.G., CLEAN CODE, COMMENTS, SMALL METHODS].
+- Add [UNIT TESTS / LOGGING / COMMENTS].
+
+FILLED EXAMPLE:
+---------------
+Write Java code that reads a CSV file, maps each row to an Employee object,
+and logs invalid rows.
+
+Requirements:
+- Use Spring Batch.
+- Follow clean code style with small methods.
+- Add basic logging when a row is skipped.
+
+-----------------------------------------------------------------------------
+TEMPLATE 4.5: REFACTOR CODE
+-----------------------------------------------------------------------------
+Refactor this [LANGUAGE] code to be more [READABLE / MAINTAINABLE / TESTABLE].
+Keep the same behavior.
+Then explain the main changes in a few bullets.
+
+Code:
+```
+[YOUR CODE HERE]
+```
+
+
+================================================================================
+PART 5: IMAGE PROMPT FORMULA
+================================================================================
+
+THE FORMULA:
+[Subject] + [Action/Context] + [Art Style] + [Lighting/Color] + [Camera Angle]
+
+TEMPLATE:
+A [SUBJECT] [DOING WHAT] in [CONTEXT/PLACE], [ART STYLE OR MEDIUM],
+[LIGHTING AND COLORS], [CAMERA ANGLE OR COMPOSITION].
+
+EXAMPLES:
+---------
+
+1. A brave knight standing on a cliff overlooking a burning city,
+   realistic digital painting, warm orange and red lighting,
+   dramatic low-angle shot.
+
+2. A cute cat wearing headphones and working on a laptop in a cozy room,
+   anime illustration, soft warm lighting, close-up shot.
+
+3. A futuristic city with flying cars during a rainstorm,
+   cyberpunk digital art, neon blue and purple lighting,
+   wide-angle aerial view.
+
+4. A baby dragon learning to breathe fire with its mother in a cave,
+   watercolor painting, soft golden light from the fire,
+   mid-shot composition.
+
+5. An astronaut planting a flag on an alien planet with purple plants,
+   3D render style, high-contrast lighting,
+   wide-angle lens from behind the astronaut.
+
+BREAKDOWN:
+----------
+Subject      -> WHO or WHAT is in the image
+Action       -> What are they DOING
+Context      -> WHERE is this happening
+Art Style    -> Digital art, watercolor, anime, 3D render, photo, etc.
+Lighting     -> Warm, cold, neon, golden hour, dramatic, soft, etc.
+Camera       -> Close-up, wide-angle, aerial, low-angle, portrait, etc.
+
+
+================================================================================
+PART 6: THE "DO EVERYTHING" UNIVERSAL TEMPLATE
+================================================================================
+
+When you're not sure what format to use, try this:
+
+-----------------------------------------------------------------------------
+I want help with: [WHAT YOU'RE TRYING TO DO].
+
+Context: [BRIEF BACKGROUND].
+
+Please:
+1. [FIRST THING YOU WANT]
+2. [SECOND THING YOU WANT]
+3. [THIRD THING YOU WANT]
+
+Output format: [BULLETS, CODE ONLY, SHORT PARAGRAPH, ETC.]
+-----------------------------------------------------------------------------
+
+FILLED EXAMPLE:
+---------------
+I want help with: understanding this Java Spring Batch processor.
+
+Context: This is part of an ETL job migrating from DataStage.
+
+Please:
+1. Explain what the code does in simple terms
+2. Point out any obvious problems
+3. Suggest a cleaner version of the code
+
+Output format: bullets + revised Java code
+
+
+================================================================================
+PART 7: CLASSIFICATION / DECISION TEMPLATE
+================================================================================
+
+For tasks where you need the AI to make a choice or recommendation:
+
+-----------------------------------------------------------------------------
+To decide [DECISION/QUESTION], consider:
+
+(1) [CRITERION 1]
+(2) [CRITERION 2]
+(3) [CRITERION 3]
+
+Then give a short conclusion with your recommendation.
+-----------------------------------------------------------------------------
+
+FILLED EXAMPLE:
+---------------
+To decide whether we should use PostgreSQL or MongoDB for our new service,
+consider:
+
+(1) Query complexity - we need many JOIN operations
+(2) Scalability requirements - expecting 10M records/month
+(3) Team expertise - team knows SQL well, limited NoSQL experience
+
+Then give a short conclusion with your recommendation.
+
+
+================================================================================
+PART 8: DOCUMENTATION / EXPLANATION TEMPLATE
+================================================================================
+
+-----------------------------------------------------------------------------
+Explain the following code/concept in simple terms for [AUDIENCE].
+
+Include:
+1. A high-level summary (2-3 sentences).
+2. A line-by-line walkthrough.
+3. One example of how to use it in practice.
+-----------------------------------------------------------------------------
+
+
+================================================================================
+QUICK REFERENCE: WHICH TEMPLATE TO USE?
+================================================================================
+
+TASK                          | USE THIS TEMPLATE
+------------------------------|----------------------------------
+Summarize text                | Template 3.1
+Explain a concept             | Template 3.2
+Improve writing               | Template 3.3
+Generate ideas                | Template 3.4
+Explain code                  | Template 4.2
+Fix a bug                     | Template 4.3
+Write new code                | Template 4.4
+Refactor code                 | Template 4.5
+Generate an image             | Part 5 Formula
+Make a decision               | Part 7
+Not sure / complex task       | Part 6 Universal
+
+
+================================================================================
+TL;DR - THE GOLDEN RULES
+================================================================================
+
+1. USE DELIMITERS     -> Separate instructions from data (XML, """, ---)
+2. BE SPECIFIC        -> Numbers, formats, audiences - no vague words
+3. GIVE CONTEXT       -> Background + purpose = better answers
+4. SHOW EXAMPLES      -> Few-shot prompting when format matters
+5. ASK FOR STEPS      -> Chain-of-thought for complex reasoning
+6. ITERATE            -> Refine in 2-3 rounds, that's normal
+
+================================================================================
+END OF HANDBOOK
+================================================================================
+
+================================================================================
+         ADVANCED PROMPT ENGINEERING: KEYWORDS, FORMULAS & TECHNIQUES
+                       A Developer's Complete Reference
+================================================================================
+
+This guide goes beyond basics. It covers the specific KEYWORDS that steer AI
+responses, advanced formulas for accuracy, and coding-specific techniques.
+
+Think of keywords as "steering wheels" - they tell the AI which direction to
+go, how fast to drive, and what destination to reach.
+
+================================================================================
+PART 1: THE KEYWORD CATEGORIES
+================================================================================
+
+Keywords fall into 5 main categories. Master these, and you control the output.
+
+--------------------------------------------------------------------------------
+CATEGORY 1: IDENTITY KEYWORDS (Who should the AI be?)
+--------------------------------------------------------------------------------
+These assign a "persona" to the AI. It switches from generic assistant to
+specialist mode.
+
+KEYWORD              | EXAMPLE
+---------------------|--------------------------------------------------
+"Act as..."          | "Act as a senior software engineer"
+"You are a..."       | "You are a strict code reviewer"
+"Simulate..."        | "Simulate a job interview for a backend role"
+"Pretend you are..." | "Pretend you are a database administrator"
+
+WHY IT WORKS:
+The AI has been trained on text from many perspectives. When you say
+"Act as a senior engineer," you're telling it to weight its responses
+toward that expertise level.
+
+--------------------------------------------------------------------------------
+CATEGORY 2: ACTION KEYWORDS (What should the AI do?)
+--------------------------------------------------------------------------------
+Vague verbs = vague results. Be specific about the ACTION.
+
+INSTEAD OF "WRITE"   | USE THESE MORE SPECIFIC VERBS
+---------------------|--------------------------------------------------
+                     | Draft, Outline, Brainstorm, Compose, Script
+
+INSTEAD OF "LOOK AT" | USE THESE
+---------------------|--------------------------------------------------
+                     | Analyze, Critique, Proofread, Summarize, Extract
+
+INSTEAD OF "CHANGE"  | USE THESE
+---------------------|--------------------------------------------------
+                     | Rephrase, Simplify, Translate, Expand, Condense
+
+INSTEAD OF "FIX"     | USE THESE
+---------------------|--------------------------------------------------
+                     | Debug, Refactor, Optimize, Patch, Correct
+
+--------------------------------------------------------------------------------
+CATEGORY 3: FORMAT KEYWORDS (What should the output look like?)
+--------------------------------------------------------------------------------
+Without format instructions, the AI guesses (usually a wall of text).
+
+KEYWORD              | WHEN TO USE
+---------------------|--------------------------------------------------
+"Table"              | Comparing items, organizing data
+"Bullet points"      | Lists, summaries, quick reads
+"Step-by-step"       | Tutorials, processes, instructions
+"Markdown"           | Headers, bold, structured documents
+"CSV"                | Data for Excel/spreadsheets
+"JSON"               | Structured data for code
+"Code only"          | When you just want the code block
+"Numbered list"      | Sequential items, rankings
+
+--------------------------------------------------------------------------------
+CATEGORY 4: TONE & AUDIENCE KEYWORDS (How should it sound?)
+--------------------------------------------------------------------------------
+These control the "voice" of the response.
+
+KEYWORD              | EFFECT
+---------------------|--------------------------------------------------
+"ELI5"               | Explain Like I'm 5 - ultra simple
+"Professional"       | Formal, workplace appropriate
+"Concise" / "Brief"  | Cuts out fluff, gets to the point
+"Empathetic"         | Softer tone for difficult messages
+"Technical"          | Uses jargon, assumes expertise
+"For a [audience]"   | "For a beginner" / "For a CEO" / "For a child"
+
+--------------------------------------------------------------------------------
+CATEGORY 5: CONSTRAINT KEYWORDS (What are the guardrails?)
+--------------------------------------------------------------------------------
+These STOP the AI from doing things you don't want.
+
+KEYWORD              | EXAMPLE
+---------------------|--------------------------------------------------
+"Only"               | "Give me the code only, no explanation"
+"Limit to"           | "Limit to 3 sentences"
+"Do not"             | "Do not use technical jargon"
+"In the style of"    | "Write in the style of Shakespeare"
+"Exclude"            | "Exclude any marketing language"
+"Focus on"           | "Focus only on security issues"
+
+
+================================================================================
+PART 2: THE PERFECT PROMPT FORMULA
+================================================================================
+
+When stuck, fill in this formula:
+
+--------------------------------------------------------------------------------
+"Act as a [ROLE].
+ Create a [TASK].
+ Show it as [FORMAT].
+ And ensure you [CONSTRAINT/TONE]."
+--------------------------------------------------------------------------------
+
+EXAMPLES:
+
+1. "Act as a fitness coach.
+    Create a meal plan for next week.
+    Show it as a table with days of the week.
+    And ensure you include calorie counts for every meal."
+
+2. "Act as a senior Java developer.
+    Create a utility class for date formatting.
+    Show it as clean, documented code.
+    And ensure you follow Java naming conventions."
+
+3. "Act as a tech writer.
+    Create documentation for this API endpoint.
+    Show it as Markdown with code examples.
+    And ensure you write for junior developers."
+
+
+================================================================================
+PART 3: THE "HALLUCINATION-PROOF" FORMULA
+================================================================================
+
+LLMs can make things up (hallucinate). This formula minimizes that risk.
+
+FORMULA:
+[Context/Data] + [Task] + [Strict Constraint] + [Escape Hatch]
+
+--------------------------------------------------------------------------------
+COMPONENT 1: THE CONTEXT (GROUNDING)
+--------------------------------------------------------------------------------
+Instead of relying on AI's training data, PROVIDE the source material.
+
+BAD:  "What is Company X's return policy?"
+GOOD: "Context: [Paste the return policy text here]"
+
+--------------------------------------------------------------------------------
+COMPONENT 2: THE TASK
+--------------------------------------------------------------------------------
+State exactly what you want done with that context.
+
+"Task: Summarize the refund timeline."
+
+--------------------------------------------------------------------------------
+COMPONENT 3: THE STRICT CONSTRAINT
+--------------------------------------------------------------------------------
+Lock the AI to ONLY your provided information.
+
+"Answer using ONLY the information provided in the Context above.
+ Do not use outside knowledge."
+
+--------------------------------------------------------------------------------
+COMPONENT 4: THE ESCAPE HATCH (CRUCIAL)
+--------------------------------------------------------------------------------
+Give the AI permission to say "I don't know" instead of guessing.
+
+"If the answer is not contained in the context, state
+ 'Information not available'. Do not guess."
+
+--------------------------------------------------------------------------------
+FULL EXAMPLE:
+--------------------------------------------------------------------------------
+Context:
+"""
+[Paste company policy / documentation / code here]
+"""
+
+Task: Extract all deadlines mentioned in this document.
+
+Constraint: Use ONLY the information above. Do not add external knowledge.
+
+Escape Hatch: If no deadlines are found, say "No deadlines found in document."
+
+--------------------------------------------------------------------------------
+WHY THE ESCAPE HATCH WORKS (Technical Explanation):
+--------------------------------------------------------------------------------
+LLMs are probabilistic engines. They predict the next likely token.
+
+When you ask a vague question, the "probability cloud" of answers is huge,
+and the model might pick something that sounds plausible but is wrong.
+
+By adding "If you don't know, say so," you artificially boost the probability
+of the "stop/unknown" token, making it easier for the model to choose
+silence over creativity.
+
+
+================================================================================
+PART 4: CODING-SPECIFIC KEYWORDS
+================================================================================
+
+Code requires precision. These keywords are essential for programming tasks.
+
+--------------------------------------------------------------------------------
+4.1 THE "STACK" KEYWORDS (Always specify these first)
+--------------------------------------------------------------------------------
+If you don't specify, the AI might give you Python 2 when you need Python 3,
+or React class components when you want hooks.
+
+KEYWORD              | EXAMPLE
+---------------------|--------------------------------------------------
+"In [Language]..."   | "In Python 3.11...", "In TypeScript..."
+"Using [Framework]"  | "Using Spring Boot...", "Using React hooks..."
+"Using [Library]"    | "Using Pandas...", "Using only standard library"
+"Version [X]"        | "For Node.js version 18"
+
+--------------------------------------------------------------------------------
+4.2 THE "ACTION" KEYWORDS FOR CODE
+--------------------------------------------------------------------------------
+KEYWORD    | WHAT IT DOES
+-----------|--------------------------------------------------------------
+Refactor   | Rewrite to be cleaner/efficient WITHOUT changing behavior
+Debug      | Find and explain errors (always include error message!)
+Optimize   | Improve performance (speed or memory)
+Document   | Add comments, docstrings, JSDoc
+Convert    | Translate from one language to another
+Scaffold   | Generate the basic project structure
+Annotate   | Add line-by-line explanations
+
+--------------------------------------------------------------------------------
+4.3 THE "QUALITY & ROBUSTNESS" KEYWORDS
+--------------------------------------------------------------------------------
+These move code from "it works" to "it's production-ready."
+
+KEYWORD           | EFFECT
+------------------|-----------------------------------------------------------
+"Production-ready"| Includes error handling, logging, efficient logic
+"Robust"          | Focuses on preventing crashes
+"Secure"          | Prevents vulnerabilities (SQL injection, XSS, etc.)
+"Sanitize"        | Clean/validate inputs before processing
+"Scalable"        | Works with small AND large amounts of data
+"Idiomatic"       | Uses the "correct" style for that language
+
+EXAMPLES:
+- "Write a production-ready Python script to upload files to S3."
+- "Make this API call robust against network timeouts."
+- "Write a SQL query but sanitize inputs to prevent injection."
+
+--------------------------------------------------------------------------------
+4.4 THE "ARCHITECTURE & DESIGN" KEYWORDS
+--------------------------------------------------------------------------------
+Use these for structural solutions.
+
+KEYWORD           | EFFECT
+------------------|-----------------------------------------------------------
+"Design Pattern"  | Use established patterns (Singleton, Factory, Observer)
+"Modular"         | Break into small, reusable functions
+"RESTful"         | Follow REST API conventions
+"SOLID"           | Follow SOLID principles
+"DRY"             | Don't Repeat Yourself - eliminate duplication
+"Clean Code"      | Follow clean code principles
+
+EXAMPLES:
+- "Implement a logger using the Singleton design pattern."
+- "Refactor this to be modular so I can reuse the parsing logic."
+- "Apply the DRY principle to this JavaScript function."
+
+--------------------------------------------------------------------------------
+4.5 THE "MODERNIZATION" KEYWORDS
+--------------------------------------------------------------------------------
+AI is trained on old AND new code. These force modern approaches.
+
+KEYWORD             | EFFECT
+--------------------|----------------------------------------------------------
+"Modern"            | Latest syntax and approaches
+"Deprecation-free"  | Avoid functions being removed in future versions
+"ES6+" / "ES2020"   | Specific JavaScript version
+"Functional"        | Immutability, pure functions, no side effects
+"Object-Oriented"   | Classes, inheritance, encapsulation
+"Async/Await"       | Modern async patterns (not callbacks)
+
+EXAMPLES:
+- "Rewrite this using modern ES6+ syntax."
+- "Convert this callback-based code to async/await."
+- "Use a functional programming approach with pure functions."
+
+--------------------------------------------------------------------------------
+4.6 THE "TESTING" KEYWORDS
+--------------------------------------------------------------------------------
+KEYWORD      | MEANING
+-------------|-------------------------------------------------------------
+"Happy Path" | The scenario where everything goes right
+"Edge Cases" | Weird scenarios (empty lists, nulls, negative numbers)
+"Unit Test"  | Test individual functions in isolation
+"Test Cases" | Generate multiple test scenarios
+"TDD"        | Test Driven Development - write test BEFORE code
+"Mock Data"  | Generate fake data for testing
+
+EXAMPLES:
+- "Write tests for the happy path first."
+- "Now add tests covering edge cases."
+- "Generate 5 unit test cases including division by zero."
+- "Create mock employee data with 20 rows as CSV."
+
+--------------------------------------------------------------------------------
+4.7 THE "PERFORMANCE" KEYWORDS
+--------------------------------------------------------------------------------
+KEYWORD              | EFFECT
+---------------------|----------------------------------------------------------
+"Time Complexity"    | Analyze or target specific Big O
+"Big O"              | Same as above
+"Memory Efficient"   | Minimize RAM usage
+"Lazy Loading"       | Load resources only when needed
+"Caching"            | Store results to avoid recomputation
+
+EXAMPLE:
+"Write a sorting algorithm. Ensure Time Complexity is better than O(n^2)."
+
+
+================================================================================
+PART 5: CODING PROMPT TEMPLATES (COPY-PASTE READY)
+================================================================================
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.1: WRITE NEW CODE
+--------------------------------------------------------------------------------
+Act as a Senior [LANGUAGE] Developer.
+
+Write a [FUNCTION/CLASS/SCRIPT] that [DOES WHAT].
+
+Requirements:
+- Use [FRAMEWORK/LIBRARY] if needed.
+- Handle [EDGE CASES: null inputs, empty lists, etc.].
+- Follow [STYLE: clean code, PEP8, etc.].
+- Include [COMMENTS/DOCSTRINGS/LOGGING].
+
+Output: Code only, with comments.
+
+FILLED EXAMPLE:
+---------------
+Act as a Senior Java Developer.
+
+Write a function that validates email addresses.
+
+Requirements:
+- Use regular expressions.
+- Handle null inputs gracefully to avoid crashes.
+- Follow Java naming conventions.
+- Include Javadoc comments explaining the logic.
+
+Output: Code only, with comments.
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.2: DEBUG AN ERROR
+--------------------------------------------------------------------------------
+Analyze the following [LANGUAGE] code and the error message below.
+
+1. Identify the root cause of the [ERROR TYPE].
+2. Explain why this error occurs.
+3. Propose a fix that [SPECIFIC SOLUTION].
+4. Show the corrected code.
+
+Code:
+```[language]
+[PASTE CODE HERE]
+```
+
+Error:
+```
+[PASTE ERROR MESSAGE HERE]
+```
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.3: REFACTOR CODE
+--------------------------------------------------------------------------------
+Refactor this [LANGUAGE] code to be more [GOAL: readable/maintainable/testable].
+
+Requirements:
+- Keep the same behavior (don't change what it does).
+- Apply [PRINCIPLE: DRY, SOLID, Clean Code].
+- Use [STYLE: modern syntax, design patterns].
+- Add comments explaining major changes.
+
+Code:
+```[language]
+[PASTE CODE HERE]
+```
+
+Output: Refactored code + bullet list of changes made.
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.4: EXPLAIN COMPLEX CODE
+--------------------------------------------------------------------------------
+Explain this [LANGUAGE] code step-by-step for a [AUDIENCE: junior/senior] developer.
+
+Include:
+1. A high-level summary (2-3 sentences).
+2. A line-by-line walkthrough of the complex parts.
+3. Any potential issues or improvements.
+
+Code:
+```[language]
+[PASTE CODE HERE]
+```
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.5: CODE REVIEW
+--------------------------------------------------------------------------------
+Act as a strict code reviewer.
+
+Review this [LANGUAGE] code for:
+1. Bugs or logic errors
+2. Security vulnerabilities
+3. Performance issues
+4. Style/readability problems
+5. Missing error handling
+
+For each issue found, explain:
+- What the problem is
+- Why it matters
+- How to fix it
+
+Code:
+```[language]
+[PASTE CODE HERE]
+```
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.6: GENERATE TESTS
+--------------------------------------------------------------------------------
+Generate [NUMBER] unit tests for the following [LANGUAGE] function.
+
+Include:
+- Happy path tests (normal usage)
+- Edge case tests (empty input, null, negative numbers)
+- Error condition tests
+
+Use [TESTING FRAMEWORK: JUnit, pytest, Jest, etc.].
+
+Function to test:
+```[language]
+[PASTE CODE HERE]
+```
+
+--------------------------------------------------------------------------------
+TEMPLATE 5.7: THE QUICK SHORTCUT (Minimal prompt)
+--------------------------------------------------------------------------------
+When you need fast results with no fluff:
+
+[LANGUAGE]. [TASK]. Code only.
+
+EXAMPLES:
+- "Python. Script to parse JSON and save to CSV. Code only."
+- "Java. Method to check if string is palindrome. Code only."
+- "SQL. Query to find duplicate emails. Code only."
+
+
+================================================================================
+PART 6: SPECIAL TRIGGER PHRASES
+================================================================================
+
+These phrases activate specific behaviors in the AI.
+
+--------------------------------------------------------------------------------
+PHRASE                          | EFFECT
+--------------------------------|----------------------------------------------
+"Let's think step by step"      | Forces reasoning for math/logic problems
+"First, list your assumptions"  | Makes AI state what it's assuming
+"Show your work"                | Explains the reasoning process
+"Compare and contrast"          | Side-by-side analysis
+"Pros and cons"                 | Balanced evaluation
+"What are the tradeoffs?"       | Engineering decision analysis
+"Walk me through"               | Detailed explanation
+"Break this down"               | Decompose complex problems
+--------------------------------------------------------------------------------
+
+
+================================================================================
+PART 7: KEYWORD QUICK REFERENCE TABLE
+================================================================================
+
+GOAL                    | KEYWORDS TO USE
+------------------------|--------------------------------------------------
+Set expertise level     | "Act as", "You are a", "Senior", "Expert"
+Get specific format     | "Table", "Bullet points", "JSON", "Code only"
+Control length          | "Limit to", "Concise", "In X words", "Brief"
+Ensure quality code     | "Production-ready", "Robust", "Secure"
+Force modern code       | "Modern", "ES6+", "Async/await", "Idiomatic"
+Get clean structure     | "Modular", "Design pattern", "SOLID", "DRY"
+Handle errors           | "Edge cases", "Error handling", "Validate"
+Test code               | "Unit test", "Happy path", "Edge cases", "TDD"
+Prevent hallucination   | "Only from context", "If unknown, say so"
+Simple explanations     | "ELI5", "For a beginner", "In simple terms"
+Skip the fluff          | "Code only", "No explanation", "Just the answer"
+
+
+================================================================================
+PART 8: GENERAL-PURPOSE TEMPLATES
+================================================================================
+
+--------------------------------------------------------------------------------
+TEMPLATE 8.1: UNIVERSAL PROMPT (Works for almost anything)
+--------------------------------------------------------------------------------
+You are a [ROLE: e.g., teacher, Java expert, designer].
+
+Task:
+[What do you want? One simple sentence.]
+
+Context:
+[Anything the AI should know: project, problem, background.]
+
+Requirements:
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
+
+Output format:
+[bullets / short paragraph / code only / table / etc.]
+
+Target audience:
+[who will read this? e.g., beginner, manager, developer]
+
+--------------------------------------------------------------------------------
+TEMPLATE 8.2: SUMMARIZATION
+--------------------------------------------------------------------------------
+Summarize the following text for a [AUDIENCE].
+
+Goal:
+[What you want: key points, action items, decisions, etc.]
+
+Length and format:
+[Number of bullets / ~X words / short paragraph.]
+
+Text:
+"""
+[PASTE TEXT HERE]
+"""
+
+--------------------------------------------------------------------------------
+TEMPLATE 8.3: COMPARISON / DECISION
+--------------------------------------------------------------------------------
+Compare [OPTION A] vs [OPTION B] for [USE CASE].
+
+Consider:
+1. [CRITERION 1]
+2. [CRITERION 2]
+3. [CRITERION 3]
+
+Format: Table with pros/cons, then a recommendation.
+
+--------------------------------------------------------------------------------
+TEMPLATE 8.4: IMAGE GENERATION
+--------------------------------------------------------------------------------
+A [SUBJECT] [DOING WHAT] in [CONTEXT/PLACE],
+[ART STYLE OR MEDIUM],
+[LIGHTING AND COLORS],
+[CAMERA ANGLE OR COMPOSITION].
+
+EXAMPLE:
+A futuristic robot playing chess in a neon-lit park,
+synthwave digital art style,
+pink and blue lighting,
+wide-angle lens.
+
+
+================================================================================
+PART 9: COMMON MISTAKES TO AVOID
+================================================================================
+
+MISTAKE                          | FIX
+---------------------------------|---------------------------------------------
+Vague verbs ("look at this")     | Use specific verbs (analyze, debug, refactor)
+No format specified              | Always say: table, bullets, code only, etc.
+No audience specified            | Add "for a junior dev" or "for a manager"
+Assuming AI knows context        | Provide background explicitly
+Not specifying language/version  | Always say "Python 3.11" or "Java 17"
+Negative constraints only        | Say what TO do, not just what NOT to do
+No escape hatch for unknowns     | Add "If unsure, say 'I don't know'"
+One giant prompt                 | Break complex tasks into steps
+
+
+================================================================================
+TL;DR - THE GOLDEN RULES FOR DEVELOPERS
+================================================================================
+
+1. SPECIFY THE STACK    -> Language, version, framework FIRST
+2. USE ACTION VERBS     -> Refactor, Debug, Optimize (not "fix" or "look at")
+3. SET THE FORMAT       -> Code only, table, bullets, JSON
+4. ADD CONSTRAINTS      -> Edge cases, error handling, no explanation
+5. PROVIDE CONTEXT      -> Don't assume the AI knows your project
+6. USE ESCAPE HATCHES   -> Let AI say "I don't know" vs. hallucinating
+7. ITERATE              -> First answer rarely perfect, refine it
+
+================================================================================
+END OF GUIDE
+================================================================================
+
+
+================================================================================
+          EXPERT PROMPT ENGINEERING: SENIOR DEVELOPER KEYWORDS
+                    System Design, Security & Beyond
+================================================================================
+
+This guide covers ADVANCED keywords that distinguish a "coder" from a
+"software engineer." These are essential for production systems, team
+collaboration, and professional-grade code.
+
+================================================================================
+PART 1: POWER KEYWORDS - IDIOMATIC & SCAFFOLD
+================================================================================
+
+These two keywords are "force multipliers" - they save enormous time.
+
+--------------------------------------------------------------------------------
+1.1 THE "IDIOMATIC" KEYWORD
+--------------------------------------------------------------------------------
+WHAT IT DOES:
+Tells the AI: "Don't just translate logic into this language; use the specific
+features that make this language unique." It forces "native speaker" code
+instead of "tourist" code.
+
+WITHOUT "IDIOMATIC" (Generic/C-style Python):
+```python
+numbers = [1, 2, 3, 4, 5, 6]
+even_numbers = []
+for i in range(len(numbers)):
+    if numbers[i] % 2 == 0:
+        even_numbers.append(numbers[i])
+```
+^ This works, but it looks like Java logic written in Python.
+
+WITH "IDIOMATIC" (Pythonic):
+Prompt: "Write Python to filter even numbers. Ensure code is idiomatic."
+
+```python
+numbers = [1, 2, 3, 4, 5, 6]
+even_numbers = [num for num in numbers if num % 2 == 0]
+```
+^ Uses List Comprehension - faster and considered best practice in Python.
+
+WHY IT MATTERS:
+- Prevents code that gets rejected in code reviews
+- Uses language-specific optimizations
+- Makes code more readable to native developers
+
+--------------------------------------------------------------------------------
+1.2 THE "SCAFFOLD" KEYWORD
+--------------------------------------------------------------------------------
+WHAT IT DOES:
+Builds the skeleton of a project (files, folders, imports) without writing
+the inner logic. Gets you started instantly.
+
+PROMPT EXAMPLE:
+"Generate a project scaffold for a Node.js Express API. Include standard
+folder structure and create placeholder files for routes and controllers.
+Do not implement business logic yet."
+
+OUTPUT:
+```
+/my-api
+  /src
+    /controllers
+      userController.js
+    /routes
+      userRoutes.js
+    app.js
+  package.json
+```
+
+And stub code like this:
+```javascript
+// userController.js
+exports.getAllUsers = (req, res) => {
+  // TODO: Implement logic to fetch users from DB
+  res.status(501).send("Not Implemented");
+};
+
+exports.createUser = (req, res) => {
+  // TODO: Implement logic to create user
+  res.status(501).send("Not Implemented");
+};
+```
+
+WHY IT MATTERS:
+- Saves 30+ minutes of boring setup time
+- Ensures consistent project structure
+- Gives you a clear starting point
+
+--------------------------------------------------------------------------------
+1.3 THE "RATIONALE" KEYWORD (BONUS)
+--------------------------------------------------------------------------------
+Add this to understand WHY the AI made certain choices.
+
+EXAMPLE:
+"Refactor this function to be idiomatic. Explain your rationale."
+
+
+================================================================================
+PART 2: VISUAL & DIAGRAM KEYWORDS
+================================================================================
+
+Generate diagrams from text - incredibly useful for documentation.
+
+KEYWORD        | OUTPUT TYPE                | EXAMPLE PROMPT
+---------------|----------------------------|--------------------------------
+"Mermaid"      | Flowcharts, sequence diags | "Create a Mermaid sequence diagram"
+"Flowchart"    | Decision trees, processes  | "Visualize this if-else as flowchart"
+"Graphviz/DOT" | Structural diagrams        | "Generate a Graphviz diagram"
+"ASCII diagram"| Text-based visuals         | "Draw an ASCII diagram of this"
+
+MERMAID EXAMPLE PROMPT:
+"Create a Mermaid sequence diagram showing authentication flow between
+User, API, and Database."
+
+OUTPUT:
+```mermaid
+sequenceDiagram
+    User->>API: Login Request
+    API->>Database: Validate Credentials
+    Database-->>API: User Data
+    API-->>User: JWT Token
+```
+
+WHY MERMAID IS POWERFUL:
+- Renders in GitHub, Notion, VS Code
+- Version-controllable (it's just text)
+- Easy to modify and share
+
+
+================================================================================
+PART 3: DEEP DEBUGGING KEYWORDS
+================================================================================
+
+Go beyond "fix this bug" to understand HOW code executes.
+
+--------------------------------------------------------------------------------
+KEYWORD: "DRY RUN"
+--------------------------------------------------------------------------------
+Asks AI to mentally execute code and show variable states at each step.
+
+PROMPT:
+"Dry run this loop with input [1, 5, 10]. Show state of variables
+'i' and 'total' at each iteration."
+
+OUTPUT:
+```
+Iteration 1: i=1, total=1
+Iteration 2: i=5, total=6
+Iteration 3: i=10, total=16
+Final: total=16
+```
+
+--------------------------------------------------------------------------------
+KEYWORD: "TRACE"
+--------------------------------------------------------------------------------
+Shows the execution PATH taken through code.
+
+PROMPT:
+"Trace the execution path if user input is null."
+
+--------------------------------------------------------------------------------
+KEYWORD: "ROOT CAUSE ANALYSIS"
+--------------------------------------------------------------------------------
+Instead of just fixing, explains WHY the bug happened.
+
+PROMPT:
+"The code fails with a timeout. Perform root cause analysis and suggest fixes."
+
+
+================================================================================
+PART 4: DEPENDENCY & LIBRARY KEYWORDS
+================================================================================
+
+Control what tools the AI is allowed to use.
+
+KEYWORD              | MEANING                              | EXAMPLE
+---------------------|--------------------------------------|----------------------
+"Standard Library"   | No external packages                 | "Using standard library only"
+"Lightweight"        | Avoid heavy frameworks               | "Suggest lightweight solution"
+"Vendor-agnostic"    | Works on AWS AND Azure               | "Make it vendor-agnostic"
+"No dependencies"    | Pure language, nothing extra         | "Solve with no dependencies"
+"Minimal imports"    | Use fewest libraries possible        | "Keep imports minimal"
+
+EXAMPLE PROMPT:
+"Write a script to parse CSV files using standard library only (no Pandas)."
+
+
+================================================================================
+PART 5: STABILITY & OPERATIONS KEYWORDS
+================================================================================
+
+Essential for scripts and database operations in production.
+
+--------------------------------------------------------------------------------
+KEYWORD: "IDEMPOTENT" (CRITICAL FOR DEVOPS)
+--------------------------------------------------------------------------------
+MEANING: "Safe to run multiple times without changing result after first run."
+
+WHY IT MATTERS:
+If your install script runs twice, it shouldn't fail or duplicate things.
+
+PROMPT:
+"Write a bash script to install Docker. Make it idempotent so it doesn't
+fail if Docker is already installed."
+
+OUTPUT PATTERN:
+```bash
+#!/bin/bash
+if ! command -v docker &> /dev/null; then
+    echo "Installing Docker..."
+    apt-get update && apt-get install -y docker.io
+else
+    echo "Docker already installed, skipping."
+fi
+```
+
+--------------------------------------------------------------------------------
+KEYWORD: "ATOMIC"
+--------------------------------------------------------------------------------
+MEANING: "All operations succeed, or none of them happen."
+
+WHY IT MATTERS:
+Critical for financial transactions - you can't debit one account without
+crediting another.
+
+PROMPT:
+"Write a function to transfer money between accounts. Ensure the transaction
+is atomic so we don't lose money if system crashes halfway."
+
+--------------------------------------------------------------------------------
+KEYWORD: "GRACEFUL DEGRADATION"
+--------------------------------------------------------------------------------
+MEANING: "If main feature fails, fall back to something that still works."
+
+PROMPT:
+"Write a video player component. Implement graceful degradation so if
+high-res fails, it plays low-res instead of showing an error."
+
+--------------------------------------------------------------------------------
+SUMMARY TABLE:
+--------------------------------------------------------------------------------
+KEYWORD              | MEANING                    | USE CASE
+---------------------|----------------------------|-------------------------
+Idempotent           | Safe to run twice          | Scripts, installers
+Atomic               | All or nothing             | Database transactions
+Graceful Degradation | Fallback on failure        | User-facing features
+Fault-tolerant       | Survives partial failures  | Distributed systems
+
+
+================================================================================
+PART 6: ALGORITHMIC APPROACH KEYWORDS
+================================================================================
+
+Dictate HOW the computer solves a problem.
+
+KEYWORD        | MEANING                              | WHEN TO USE
+---------------|--------------------------------------|---------------------------
+"Recursive"    | Function calls itself                | Tree structures, math
+"Iterative"    | Uses loops                           | Avoid stack overflow
+"Greedy"       | Best choice at each step             | Optimization problems
+"Brute Force"  | Try everything                       | When simplicity > speed
+"Divide & Conquer" | Split problem into parts         | Sorting, searching
+"Dynamic Programming" | Cache sub-problem results     | Optimization with overlap
+
+EXAMPLE PROMPTS:
+
+"Solve this tree traversal using an iterative approach to avoid stack overflow."
+
+"Write a greedy algorithm to find minimum coins for change."
+
+"First give me a brute force solution, then optimize it."
+
+
+================================================================================
+PART 7: ARCHITECTURE & DESIGN KEYWORDS
+================================================================================
+
+Force professional structural patterns.
+
+--------------------------------------------------------------------------------
+KEYWORD: "MICROSERVICES" vs "MONOLITHIC"
+--------------------------------------------------------------------------------
+Specifies how system components connect.
+
+PROMPT:
+"Design a microservices architecture for a video streaming app."
+
+--------------------------------------------------------------------------------
+KEYWORD: "EVENT-DRIVEN"
+--------------------------------------------------------------------------------
+For async systems where things happen in response to events.
+
+PROMPT:
+"Write an event-driven Lambda function that triggers when file lands in S3."
+
+--------------------------------------------------------------------------------
+KEYWORD: "CLEAN ARCHITECTURE" / "HEXAGONAL"
+--------------------------------------------------------------------------------
+Forces separation of concerns.
+
+PROMPT:
+"Refactor this API to follow Clean Architecture principles, separating
+the 'Domain' from the 'Infrastructure' layer."
+
+--------------------------------------------------------------------------------
+KEYWORD: "12-FACTOR APP"
+--------------------------------------------------------------------------------
+Gold standard methodology for SaaS applications.
+
+PROMPT:
+"Ensure this deployment config follows the 12-Factor App methodology."
+
+--------------------------------------------------------------------------------
+KEYWORD: "SOLID PRINCIPLES"
+--------------------------------------------------------------------------------
+The 5 principles of object-oriented design.
+
+PROMPT:
+"Refactor this class to follow SOLID principles, especially Single
+Responsibility and Dependency Inversion."
+
+
+================================================================================
+PART 8: SECURITY & SAFETY KEYWORDS
+================================================================================
+
+Non-negotiable for production code.
+
+KEYWORD           | WHAT IT PREVENTS              | EXAMPLE PROMPT
+------------------|-------------------------------|-----------------------------
+"OWASP Top 10"    | Standard web vulnerabilities  | "Check against OWASP Top 10"
+"Zero Trust"      | Trusting internal requests    | "Use Zero Trust model"
+"Sanitize"        | Injection attacks             | "Sanitize all user inputs"
+"Least Privilege" | Over-permissioned code        | "Apply Least Privilege"
+"Input Validation"| Malformed data                | "Add input validation"
+"Escape"          | XSS attacks                   | "Escape output for HTML"
+
+EXAMPLE PROMPTS:
+
+"Review this login function for vulnerabilities, specifically checking
+against the OWASP Top 10 (SQL Injection, XSS, etc.)."
+
+"Generate an AWS IAM policy for this Lambda with Least Privilege principle."
+
+"Sanitize all user inputs in this form before sending to database."
+
+
+================================================================================
+PART 9: PERFORMANCE & CONCURRENCY KEYWORDS
+================================================================================
+
+For when code is slow or crashes under load.
+
+--------------------------------------------------------------------------------
+KEYWORD: "RACE CONDITION"
+--------------------------------------------------------------------------------
+Bug where two things happen simultaneously and break the system.
+
+PROMPT:
+"Analyze this code for potential race conditions when two users save
+at the exact same millisecond."
+
+--------------------------------------------------------------------------------
+KEYWORD: "LAZY LOADING"
+--------------------------------------------------------------------------------
+Only load data when actually needed.
+
+PROMPT:
+"Implement lazy loading for images on this dashboard to improve startup."
+
+--------------------------------------------------------------------------------
+KEYWORD: "MEMOIZATION"
+--------------------------------------------------------------------------------
+Cache expensive function results.
+
+PROMPT:
+"Optimize this recursive calculation using memoization."
+
+--------------------------------------------------------------------------------
+KEYWORD: "N+1 PROBLEM"
+--------------------------------------------------------------------------------
+Classic database performance killer.
+
+PROMPT:
+"Check this ORM query for the N+1 problem and optimize using eager loading."
+
+--------------------------------------------------------------------------------
+OTHER PERFORMANCE KEYWORDS:
+--------------------------------------------------------------------------------
+KEYWORD              | MEANING
+---------------------|------------------------------------------------------
+"Connection Pooling" | Reuse database connections
+"Async/Await"        | Non-blocking operations
+"Caching"            | Store computed results
+"Debounce/Throttle"  | Limit function call frequency
+"Batch Processing"   | Handle data in chunks
+
+
+================================================================================
+PART 10: TESTING KEYWORDS
+================================================================================
+
+Beyond "write a test" - specify HOW to test.
+
+KEYWORD          | MEANING                              | EXAMPLE
+-----------------|--------------------------------------|----------------------
+"Happy Path"     | Everything goes right                | "Test the happy path"
+"Edge Cases"     | Weird inputs (null, empty, negative) | "Cover edge cases"
+"Regression Test"| Ensure old features still work       | "Write regression test"
+"Smoke Test"     | Quick check if system starts         | "Create smoke test"
+"Mock"           | Fake external systems                | "Mock the payment API"
+"Stub"           | Simplified fake implementation       | "Stub the database"
+"Integration Test"| Test components together            | "Write integration test"
+
+EXAMPLE PROMPT:
+"Generate unit tests including happy path, edge cases (empty input, null,
+negative numbers), and error conditions. Use pytest. Mock the database."
+
+
+================================================================================
+PART 11: META-PROMPTING (ADVANCED AI CONTROL)
+================================================================================
+
+Keywords that control HOW the AI thinks.
+
+--------------------------------------------------------------------------------
+KEYWORD: "TREE OF THOUGHTS"
+--------------------------------------------------------------------------------
+AI explores multiple solutions before choosing best one.
+
+PROMPT:
+"Use a Tree of Thoughts approach to suggest 3 ways to solve this bug,
+then tell me which is best and why."
+
+--------------------------------------------------------------------------------
+KEYWORD: "DO NOT HALLUCINATE"
+--------------------------------------------------------------------------------
+Explicitly warns AI not to invent fake libraries or methods.
+
+PROMPT:
+"Write this import list. Do not hallucinate libraries; only use real,
+installable packages."
+
+--------------------------------------------------------------------------------
+KEYWORD: "CHAIN OF VERIFICATION"
+--------------------------------------------------------------------------------
+AI double-checks its own work.
+
+PROMPT:
+"Generate the SQL query, then perform chain of verification to ensure
+it doesn't accidentally delete data."
+
+--------------------------------------------------------------------------------
+KEYWORD: "FEW-SHOT"
+--------------------------------------------------------------------------------
+Provide examples for AI to follow.
+
+PROMPT:
+"I will provide a few-shot example of the format I want. Please follow it."
+
+--------------------------------------------------------------------------------
+OTHER META KEYWORDS:
+--------------------------------------------------------------------------------
+"One-Liner"    -> Solve in single line of code
+"Glossary"     -> Generate definitions of terms in code
+"Annotate"     -> Add line-by-line explanations
+
+
+================================================================================
+PART 12: GIT & COLLABORATION KEYWORDS
+================================================================================
+
+For professional team workflows.
+
+KEYWORD                | OUTPUT                    | EXAMPLE
+-----------------------|---------------------------|---------------------------
+"Conventional Commits" | Standardized messages     | "feat:", "fix:", "chore:"
+"Changelog"            | Version history           | "Generate changelog entry"
+"Conflict Resolution"  | Merge help                | "Suggest conflict resolution"
+"PR Description"       | Pull request summary      | "Draft PR description"
+"Code Review"          | Feedback on code          | "Review this as senior dev"
+
+CONVENTIONAL COMMITS FORMAT:
+```
+feat: add user authentication
+fix: resolve null pointer in login
+chore: update dependencies
+docs: add API documentation
+refactor: simplify validation logic
+```
+
+EXAMPLE PROMPT:
+"Write a commit message for this change following Conventional Commits."
+
+
+================================================================================
+PART 13: API & INTEGRATION KEYWORDS
+================================================================================
+
+For connecting systems together.
+
+KEYWORD        | MEANING                              | EXAMPLE
+---------------|--------------------------------------|---------------------------
+"Webhook"      | Event listener endpoint              | "Handle Stripe webhook"
+"Payload"      | Data body being sent                 | "Construct JSON payload"
+"Endpoint"     | API URL/route                        | "Create mock endpoint"
+"Swagger/OpenAPI" | API documentation standard        | "Generate OpenAPI spec"
+"REST" / "GraphQL" | API architecture style           | "Design RESTful endpoint"
+"Rate Limiting"| Prevent API abuse                    | "Add rate limiting"
+
+EXAMPLE PROMPT:
+"Generate an OpenAPI (Swagger) YAML definition for this Flask route."
+
+
+================================================================================
+PART 14: DATA ENGINEERING KEYWORDS
+================================================================================
+
+For working with data pipelines and databases.
+
+KEYWORD           | MEANING                           | EXAMPLE
+------------------|-----------------------------------|---------------------------
+"ETL"             | Extract, Transform, Load          | "Write ETL script"
+"Upsert"          | Update if exists, else insert     | "Write upsert query"
+"Pivot"           | Reshape data (rows to columns)    | "Pivot this dataset"
+"Batch Processing"| Handle data in chunks             | "Use batch processing"
+"Schema"          | Data structure definition         | "Generate JSON schema"
+"Normalized"      | Proper database structure (no dup)| "Design normalized schema"
+"Denormalized"    | Flattened for speed               | "Denormalize for reads"
+"Seed"            | Reproducible random data          | "Generate with seed"
+
+UPSERT EXAMPLE PROMPT:
+"Write a SQL query to upsert this user data to avoid duplicates."
+
+ETL EXAMPLE PROMPT:
+"Write an ETL script to take data from CSV, clean the dates, and load
+into PostgreSQL."
+
+
+================================================================================
+PART 15: FRONTEND & WEB KEYWORDS
+================================================================================
+
+For UI and browser compatibility.
+
+KEYWORD          | MEANING                           | EXAMPLE
+-----------------|-----------------------------------|---------------------------
+"Responsive"     | Works on mobile and desktop       | "Make navbar responsive"
+"Mobile-first"   | Design for phones first           | "Use mobile-first CSS"
+"Pixel-perfect"  | Exact match to design             | "Convert to pixel-perfect"
+"Dark Mode"      | Support light/dark themes         | "Add dark mode support"
+"A11y"           | Accessibility (screen readers)    | "Add a11y best practices"
+"Polyfill"       | Support old browsers              | "Include polyfill"
+"Minified"       | Compressed for production         | "Give minified version"
+
+ACCESSIBILITY PROMPT:
+"Write this HTML button with a11y best practices (ARIA labels, keyboard nav)."
+
+
+================================================================================
+PART 16: MAINTENANCE & LEGACY KEYWORDS
+================================================================================
+
+For dealing with existing code.
+
+KEYWORD           | MEANING                          | EXAMPLE
+------------------|----------------------------------|---------------------------
+"Technical Debt"  | Quick fixes that hurt later      | "Highlight technical debt"
+"Hardening"       | Secure before deployment         | "Steps for hardening"
+"Legacy"          | Old, hard-to-change code         | "Explain this legacy code"
+"Migration"       | Moving to new system             | "Plan database migration"
+"Deprecation"     | Features being removed           | "Check for deprecations"
+
+EXAMPLE PROMPT:
+"Analyze this code and highlight areas of potential technical debt."
+
+
+================================================================================
+PART 17: COMPLETE KEYWORD REFERENCE TABLE
+================================================================================
+
+CATEGORY         | TOP KEYWORDS
+-----------------|----------------------------------------------------------
+Structure        | Scaffold, Modular, Clean Architecture, SOLID
+Quality          | Idiomatic, Production-ready, Robust, Type-safe
+Safety           | Idempotent, Atomic, Sanitize, Least Privilege
+Performance      | Lazy Loading, Memoization, N+1, Batch Processing
+Testing          | Happy Path, Edge Cases, Mock, Regression
+Security         | OWASP, Zero Trust, Input Validation, Escape
+Debugging        | Dry Run, Trace, Root Cause Analysis
+Visualization    | Mermaid, Flowchart, ASCII Diagram
+Data             | ETL, Upsert, Schema, Normalized, Pivot
+API              | Webhook, Payload, Swagger, Rate Limiting
+Git              | Conventional Commits, Changelog, PR Description
+Meta             | Tree of Thoughts, Chain of Verification, Few-Shot
+
+
+================================================================================
+PART 18: SENIOR ENGINEER PROMPT TEMPLATE
+================================================================================
+
+Combine keywords from multiple categories for powerful prompts:
+
+--------------------------------------------------------------------------------
+Act as a [SENIOR ROLE].
+
+[TASK VERB] a [COMPONENT] that [DOES WHAT].
+
+Architecture:
+- Follow [PATTERN: Clean Architecture / Microservices / Event-driven]
+- Apply [PRINCIPLES: SOLID / DRY / 12-Factor]
+
+Quality Requirements:
+- Make it [QUALITY: production-ready / robust / idempotent]
+- Use [STYLE: idiomatic / modern] [LANGUAGE] syntax
+- Handle [SAFETY: edge cases / race conditions / null inputs]
+
+Security:
+- Apply [SECURITY: Least Privilege / input validation / sanitization]
+- Check against [STANDARD: OWASP Top 10]
+
+Output:
+- Include [DOCS: comments / docstrings / Mermaid diagram]
+- Add [TESTS: unit tests / happy path / edge cases]
+--------------------------------------------------------------------------------
+
+FILLED EXAMPLE:
+---------------
+Act as a Senior Backend Engineer.
+
+Design an API endpoint that handles user registration.
+
+Architecture:
+- Follow Clean Architecture with separate domain and infrastructure layers
+- Apply SOLID principles
+
+Quality Requirements:
+- Make it production-ready with proper error handling and logging
+- Use idiomatic Python with type hints
+- Handle edge cases (duplicate emails, invalid input, rate limiting)
+
+Security:
+- Apply input validation and sanitization
+- Check against OWASP Top 10 (especially injection attacks)
+
+Output:
+- Include docstrings and inline comments
+- Add unit tests for happy path and edge cases
+- Generate a Mermaid sequence diagram of the registration flow
+
+
+================================================================================
+TL;DR - THE EXPERT ENGINEER'S CHECKLIST
+================================================================================
+
+Before sending any production-level prompt, consider:
+
+[ ] STRUCTURE    -> Scaffold, Clean Architecture, Modular
+[ ] QUALITY      -> Idiomatic, Production-ready, Type-safe
+[ ] SAFETY       -> Idempotent, Atomic, Edge cases
+[ ] SECURITY     -> Sanitize, Least Privilege, OWASP
+[ ] PERFORMANCE  -> Lazy loading, Caching, N+1 check
+[ ] TESTING      -> Happy path, Edge cases, Mocks
+[ ] DOCS         -> Comments, Mermaid diagrams, Changelog
+
+================================================================================
+END OF EXPERT GUIDE
+================================================================================
+
+
+
+
+
+
+
+
+
+
+================================================================================
+     COMPLETE PROMPT ENGINEERING REFERENCE: SPECIALIST KEYWORDS,
+              CHAIN-OF-THOUGHT, AND THE ULTIMATE CHEAT SHEET
+================================================================================
+
+This is the FINAL guide covering specialist domains (Cloud, AI/ML, SRE),
+Chain-of-Thought prompting techniques, and a complete cheat sheet organized
+by development phase.
+
+================================================================================
+PART 1: CLOUD & INFRASTRUCTURE KEYWORDS (IaC)
+================================================================================
+
+For code that manages servers (Terraform, CloudFormation, AWS CDK).
+
+KEYWORD           | MEANING                              | EXAMPLE PROMPT
+------------------|--------------------------------------|---------------------------
+"Provision"       | Create cloud resources               | "Provision an AWS Lambda"
+"Drift"           | Real setup doesn't match code        | "Detect drift in stack"
+"Cold Start"      | Serverless function wake-up delay    | "Minimize cold start latency"
+"Region-agnostic" | Works in any AWS/Azure region        | "Make policy region-agnostic"
+"Infrastructure as Code" | Define infra in files        | "Write IaC for this setup"
+"Teardown"        | Delete/destroy resources             | "Add teardown script"
+"State file"      | Terraform's record of what exists    | "Handle state file locking"
+
+EXAMPLE PROMPTS:
+
+"Write a Terraform script to provision an AWS Lambda function and S3 bucket."
+
+"Optimize this Lambda function to minimize cold start latency."
+
+"Explain how to detect drift in this CloudFormation stack."
+
+
+================================================================================
+PART 2: AI ENGINEERING KEYWORDS
+================================================================================
+
+For coding WITH AI models (not just using them).
+
+--------------------------------------------------------------------------------
+KEYWORD: "RAG" (Retrieval-Augmented Generation)
+--------------------------------------------------------------------------------
+The technique of feeding a model your own data/documents.
+
+PROMPT:
+"Write a Python script to implement a basic RAG pipeline using LangChain."
+
+--------------------------------------------------------------------------------
+KEYWORD: "EMBEDDINGS"
+--------------------------------------------------------------------------------
+Mathematical vector representations of text.
+
+PROMPT:
+"Write code to convert these user comments into vector embeddings."
+
+--------------------------------------------------------------------------------
+KEYWORD: "INFERENCE"
+--------------------------------------------------------------------------------
+The act of the model actually running/thinking.
+
+PROMPT:
+"Optimize this model code for faster inference on a CPU."
+
+--------------------------------------------------------------------------------
+KEYWORD: "TOKEN LIMIT"
+--------------------------------------------------------------------------------
+Maximum input/output size for a model.
+
+PROMPT:
+"Write a function to truncate text so it fits within the 8k token limit."
+
+--------------------------------------------------------------------------------
+OTHER AI KEYWORDS:
+--------------------------------------------------------------------------------
+KEYWORD           | MEANING
+------------------|------------------------------------------------------
+"Fine-tuning"     | Training model on custom data
+"Prompt injection"| Security attack via malicious prompts
+"Hallucination"   | Model making things up
+"Context window"  | How much text model can "see"
+"Temperature"     | Randomness/creativity setting
+"Few-shot"        | Teaching by examples in the prompt
+"Zero-shot"       | No examples, just instructions
+
+
+================================================================================
+PART 3: CODE METRICS KEYWORDS
+================================================================================
+
+Measure code quality with mathematical formulas.
+
+--------------------------------------------------------------------------------
+KEYWORD: "CYCLOMATIC COMPLEXITY"
+--------------------------------------------------------------------------------
+A score of how many "paths" (if/else statements) are in code. Lower = better.
+
+PROMPT:
+"Refactor this function to reduce its Cyclomatic Complexity below 10."
+
+--------------------------------------------------------------------------------
+KEYWORD: "COGNITIVE COMPLEXITY"
+--------------------------------------------------------------------------------
+A score of how hard the code is for a HUMAN to understand.
+
+PROMPT:
+"This code is hard to read. Refactor it to lower the Cognitive Complexity."
+
+--------------------------------------------------------------------------------
+KEYWORD: "CODE SMELL"
+--------------------------------------------------------------------------------
+Patterns that aren't bugs but indicate "bad design."
+
+Common Code Smells:
+- Long Method (function too big)
+- God Class (class does everything)
+- Feature Envy (method uses another class's data too much)
+- Duplicate Code
+- Dead Code
+
+PROMPT:
+"Review this class for code smells like Long Method or God Class."
+
+
+================================================================================
+PART 4: EVENT HANDLING KEYWORDS
+================================================================================
+
+Essential for UI and high-traffic APIs.
+
+--------------------------------------------------------------------------------
+KEYWORD: "DEBOUNCE"
+--------------------------------------------------------------------------------
+MEANING: "Wait for user to STOP doing something before acting."
+
+USE CASE: Search bars - don't fire API call for every keystroke.
+
+PROMPT:
+"Implement debounce on the search bar so it waits 300ms after typing stops."
+
+--------------------------------------------------------------------------------
+KEYWORD: "THROTTLE"
+--------------------------------------------------------------------------------
+MEANING: "Only allow this action once every X seconds."
+
+USE CASE: Prevent users clicking "Buy" button multiple times.
+
+PROMPT:
+"Write a throttle function to limit button clicks to once per second."
+
+--------------------------------------------------------------------------------
+KEYWORD: "EXPONENTIAL BACKOFF"
+--------------------------------------------------------------------------------
+MEANING: "If server fails, wait 1s, then 2s, then 4s, then 8s..."
+
+USE CASE: Retrying failed API requests without overwhelming server.
+
+PROMPT:
+"Implement exponential backoff strategy for retrying failed API requests."
+
+--------------------------------------------------------------------------------
+COMPARISON:
+--------------------------------------------------------------------------------
+KEYWORD    | BEHAVIOR                    | USE CASE
+-----------|-----------------------------|---------------------------------
+Debounce   | Wait until activity stops   | Search input, resize events
+Throttle   | Limit frequency             | Scroll events, button clicks
+Backoff    | Increasing wait on failure  | API retries, reconnection
+
+
+================================================================================
+PART 5: DATABASE INTERNALS KEYWORDS
+================================================================================
+
+KEYWORD           | MEANING                              | EXAMPLE PROMPT
+------------------|--------------------------------------|---------------------------
+"Indexing"        | Speed up queries                     | "Suggest indexing strategies"
+"Sharding"        | Split DB across servers              | "Implement sharding by UserID"
+"ACID Compliance" | Data validity guarantee              | "Check ACID compliance"
+"Deadlock"        | Two queries waiting for each other   | "Detect potential deadlocks"
+"Connection Pool" | Reuse DB connections                 | "Add connection pooling"
+"Query Plan"      | How DB executes a query              | "Analyze the query plan"
+"Denormalization" | Flatten for read speed               | "Denormalize for faster reads"
+
+ACID EXPLAINED:
+- Atomicity: All or nothing
+- Consistency: Data stays valid
+- Isolation: Transactions don't interfere
+- Durability: Saved data survives crashes
+
+
+================================================================================
+PART 6: SRE & RELIABILITY KEYWORDS
+================================================================================
+
+For systems that CANNOT fail (banking, healthcare, production systems).
+
+--------------------------------------------------------------------------------
+KEYWORD: "INSTRUMENT"
+--------------------------------------------------------------------------------
+Add code that measures HOW the code is running (logs, metrics).
+
+PROMPT:
+"Instrument this API endpoint to log execution time of every database query."
+
+--------------------------------------------------------------------------------
+KEYWORD: "CIRCUIT BREAKER"
+--------------------------------------------------------------------------------
+Pattern that stops calling a broken service repeatedly.
+
+States: CLOSED (normal) → OPEN (failing, stop trying) → HALF-OPEN (test again)
+
+PROMPT:
+"Implement the Circuit Breaker pattern for the payment gateway connection."
+
+--------------------------------------------------------------------------------
+KEYWORD: "FUZZING"
+--------------------------------------------------------------------------------
+Testing by throwing random garbage data at code to see if it crashes.
+
+PROMPT:
+"Write a Python script to perform fuzzing on my input parser."
+
+--------------------------------------------------------------------------------
+KEYWORD: "TELEMETRY"
+--------------------------------------------------------------------------------
+The logs/metrics/traces your app sends out for monitoring.
+
+PROMPT:
+"Design a telemetry structure for tracking user clicks and errors."
+
+--------------------------------------------------------------------------------
+OTHER SRE KEYWORDS:
+--------------------------------------------------------------------------------
+KEYWORD           | MEANING
+------------------|------------------------------------------------------
+"SLO/SLA/SLI"     | Service Level Objective/Agreement/Indicator
+"Runbook"         | Step-by-step guide for handling incidents
+"Postmortem"      | Analysis after an incident
+"Canary deploy"   | Release to small % of users first
+"Blue-green"      | Two identical environments, switch between them
+"Rolling update"  | Update servers one at a time
+
+
+================================================================================
+PART 7: CONCURRENCY & THREADING KEYWORDS
+================================================================================
+
+For high-performance code doing multiple things at once.
+
+--------------------------------------------------------------------------------
+KEYWORD: "MUTEX" (Mutual Exclusion)
+--------------------------------------------------------------------------------
+A lock that stops two threads from writing to same variable simultaneously.
+
+PROMPT:
+"Protect this shared counter variable using a Mutex."
+
+--------------------------------------------------------------------------------
+KEYWORD: "DEADLOCK"
+--------------------------------------------------------------------------------
+Two processes waiting for each other forever.
+
+PROMPT:
+"Analyze this multi-threaded code for potential deadlock scenarios."
+
+--------------------------------------------------------------------------------
+KEYWORD: "NON-BLOCKING"
+--------------------------------------------------------------------------------
+Code doesn't freeze the UI/screen while waiting for data.
+
+PROMPT:
+"Rewrite this file upload function to be non-blocking using async/await."
+
+--------------------------------------------------------------------------------
+OTHER CONCURRENCY KEYWORDS:
+--------------------------------------------------------------------------------
+KEYWORD           | MEANING
+------------------|------------------------------------------------------
+"Thread-safe"     | Safe to use from multiple threads
+"Semaphore"       | Like mutex but allows N threads
+"Race condition"  | Bug when timing causes unexpected results
+"Volatile"        | Variable that can change unexpectedly
+"Lock-free"       | Concurrent without traditional locks
+"Atomic operation"| Cannot be interrupted mid-execution
+
+
+================================================================================
+PART 8: CRYPTOGRAPHY & AUTH KEYWORDS
+================================================================================
+
+Security requires precise vocabulary. Wrong word = insecure code.
+
+KEYWORD           | MEANING                              | EXAMPLE PROMPT
+------------------|--------------------------------------|---------------------------
+"Salt"            | Random data added before hashing     | "Add unique salt per user"
+"Hash"            | One-way transformation               | "Hash passwords with bcrypt"
+"JWT"             | JSON Web Token for auth              | "Validate JWT in header"
+"Symmetric"       | Same key encrypts/decrypts           | "Use AES symmetric encryption"
+"Asymmetric"      | Public/private key pair              | "Use RSA asymmetric encryption"
+"HMAC"            | Hash-based message authentication    | "Sign payload with HMAC"
+"OAuth"           | Authorization framework              | "Implement OAuth 2.0 flow"
+"CORS"            | Cross-Origin Resource Sharing        | "Configure CORS headers"
+
+EXAMPLE PROMPT:
+"Write a function to hash passwords. Ensure you add a unique salt for
+every user and use bcrypt with cost factor 12."
+
+
+================================================================================
+PART 9: SPECIFIC REFACTORING KEYWORDS
+================================================================================
+
+"Refactor" is general. These are specific MOVES you can request.
+
+KEYWORD           | WHAT IT DOES                         | EXAMPLE
+------------------|--------------------------------------|---------------------------
+"Extract Method"  | Move chunk to new helper function    | "Apply Extract Method"
+"Inline"          | Put small function back into caller  | "Inline this helper"
+"De-couple"       | Break dependency between components  | "De-couple email from signup"
+"Extract Class"   | Move related methods to new class    | "Extract validation class"
+"Rename"          | Change names for clarity             | "Rename for clarity"
+"Move Method"     | Relocate method to better class      | "Move to where data lives"
+"Replace conditional" | Replace if/else with polymorphism | "Use strategy pattern"
+
+EXAMPLE PROMPT:
+"Review this long function and apply Extract Method to the validation logic
+and the database saving logic."
+
+
+================================================================================
+PART 10: DATA STRUCTURE KEYWORDS
+================================================================================
+
+Tell AI exactly which structure to use for optimal performance.
+
+STRUCTURE         | USE CASE                   | TIME COMPLEXITY (LOOKUP)
+------------------|----------------------------|-------------------------
+"HashMap/Dict"    | Fast key-value lookup      | O(1)
+"Array/List"      | Ordered sequence           | O(n) search, O(1) index
+"Set"             | Unique items, fast lookup  | O(1)
+"Queue (FIFO)"    | First-in-first-out         | O(1) enqueue/dequeue
+"Stack (LIFO)"    | Last-in-first-out          | O(1) push/pop
+"Tree"            | Hierarchical data          | O(log n) balanced
+"Graph"           | Networks, relationships    | Varies
+"Heap"            | Priority queue             | O(log n) insert/extract
+
+EXAMPLE PROMPTS:
+
+"Optimize this search function by converting the list into a HashMap."
+
+"Model the user relationships as a Graph."
+
+"Process these orders using a Queue (First-In-First-Out) approach."
+
+
+================================================================================
+PART 11: CHAIN-OF-THOUGHT (CoT) PROMPTING
+================================================================================
+
+Chain-of-Thought is a technique that forces the AI to "show its work"
+instead of jumping to an answer. Essential for math, logic, and debugging.
+
+--------------------------------------------------------------------------------
+11.1 THE "GOLDEN" TRIGGER PHRASE
+--------------------------------------------------------------------------------
+The single most effective phrase to activate CoT reasoning:
+
+>>> "Let's think step by step."
+
+This one phrase can dramatically improve accuracy on complex problems.
+
+--------------------------------------------------------------------------------
+11.2 CORE CoT KEYWORDS
+--------------------------------------------------------------------------------
+Use 1-2 of these per prompt (not all at once):
+
+REASONING TRIGGERS:
+- "think step by step"
+- "show your reasoning"
+- "explain your thinking"
+- "break the problem down"
+- "reason it out in stages"
+- "walk through this slowly"
+- "explain each step clearly"
+- "describe your thought process"
+
+PLANNING TRIGGERS:
+- "outline your plan before answering"
+- "first analyze, then answer"
+- "list the steps needed"
+- "identify the subproblems"
+- "start with a high-level plan, then details"
+
+VERIFICATION TRIGGERS:
+- "check your work"
+- "verify each step"
+- "double-check your reasoning"
+- "look for edge cases"
+- "explain why this solution is correct"
+
+STRUCTURE TRIGGERS:
+- "first... then... finally..."
+- "use numbered steps"
+- "separate analysis and final answer"
+
+--------------------------------------------------------------------------------
+11.3 THE CoT TEMPLATE
+--------------------------------------------------------------------------------
+
+[CONTEXT/ROLE]
+Act as a [Role, e.g., Senior Developer / Mathematician].
+
+[THE TASK]
+Here is the problem: [Insert your complex problem here]
+
+[THE TRIGGER - KEYWORDS]
+Please solve this by following these rules:
+1. Let's think step by step.
+2. Break it down into clear components.
+3. Show your work for every step.
+4. Therefore, provide the final answer only after the reasoning trace.
+
+--------------------------------------------------------------------------------
+11.4 CoT EXAMPLES
+--------------------------------------------------------------------------------
+
+EXAMPLE 1: MATH PROBLEM
+
+Without CoT:
+"If a store offers 25% off $80, then 10% off the sale price, what's final?"
+
+With CoT:
+"If a store offers 25% off $80, then 10% off the sale price, what's final?
+Think step by step and show your calculations."
+
+AI Output:
+Step 1: Calculate 25% off $80 → $80 × 0.25 = $20 discount → $60
+Step 2: Calculate 10% off $60 → $60 × 0.10 = $6 discount → $54
+Final price: $54
+
+---
+
+EXAMPLE 2: LOGIC PUZZLE
+
+Without CoT:
+"Tom is taller than Jane. Jane is taller than Mike. Is Tom taller than Mike?"
+
+With CoT:
+"Tom is taller than Jane. Jane is taller than Mike. Is Tom taller than Mike?
+Reason through this carefully before answering."
+
+AI Output:
+Tom > Jane (given)
+Jane > Mike (given)
+Therefore: Tom > Jane > Mike
+Yes, Tom is taller than Mike.
+
+---
+
+EXAMPLE 3: DEBUGGING CODE
+
+Without CoT:
+"Why isn't this code working? for i in range(5): print(i + 1"
+
+With CoT:
+"Why isn't this code working? Break it down piece by piece and identify
+the issue. for i in range(5): print(i + 1"
+
+AI Output:
+Step 1: Check syntax → missing closing parenthesis on print()
+Step 2: Should be print(i + 1)
+Fix: Add the missing ) at the end.
+
+--------------------------------------------------------------------------------
+11.5 CoT FOR JAVA/CODING SPECIFICALLY
+--------------------------------------------------------------------------------
+
+GENERATION KEYWORDS:
+- "think step by step before writing code"
+- "first outline the approach, then write the code"
+- "explain your reasoning before showing the code"
+- "identify edge cases before coding"
+
+DEBUGGING KEYWORDS:
+- "analyze this code for bugs"
+- "walk through the code step by step"
+- "identify possible root causes"
+- "propose specific fixes"
+- "show the corrected code"
+
+REFACTORING KEYWORDS:
+- "keep the behavior exactly the same"
+- "improve readability"
+- "extract helper methods"
+- "make it production-ready"
+
+JAVA CoT TEMPLATE:
+-----------------
+Act as a senior Java developer.
+
+Here is my code:
+```java
+[PASTE CODE HERE]
+```
+
+Please:
+1. Think step by step before making changes.
+2. Identify edge cases and potential bugs.
+3. Explain your reasoning.
+4. Show the improved code.
+5. Verify the changes maintain the same behavior.
+
+
+================================================================================
+PART 12: THE ULTIMATE CHEAT SHEET (BY DEVELOPMENT PHASE)
+================================================================================
+
+--------------------------------------------------------------------------------
+PHASE 1: SETUP & PLANNING
+--------------------------------------------------------------------------------
+KEYWORD           | WHAT IT DOES                    | EXAMPLE
+------------------|--------------------------------|---------------------------
+"Act as..."       | Sets the persona/expertise     | "Act as a Senior Architect"
+"Scaffold"        | Creates files/folders          | "Create project scaffold"
+"Skeleton"        | Basic code structure           | "Write class skeleton"
+"Design Pattern"  | Forces standard structures     | "Use Factory pattern"
+"Microservices"   | Distributed architecture       | "Design microservices"
+"Event-Driven"    | Async triggers                 | "Make it event-driven"
+"Mock"            | Fake data for planning         | "Generate mock user data"
+
+--------------------------------------------------------------------------------
+PHASE 2: CODING
+--------------------------------------------------------------------------------
+KEYWORD           | WHAT IT DOES                    | EXAMPLE
+------------------|--------------------------------|---------------------------
+"Idiomatic"       | Uses native language features  | "Make it Pythonic"
+"Modular"         | Small, reusable pieces         | "Keep functions modular"
+"Standard Library"| No external packages           | "Standard library only"
+"Functional"      | Pure functions/immutability    | "Use functional style"
+"Type-safe"       | Prevents type errors           | "Type-safe TypeScript"
+"Modern"          | Latest syntax                  | "Use modern ES6+ syntax"
+"Boilerplate"     | Setup/template code            | "Write the boilerplate"
+
+--------------------------------------------------------------------------------
+PHASE 3: DATA & LOGIC
+--------------------------------------------------------------------------------
+KEYWORD           | WHAT IT DOES                    | EXAMPLE
+------------------|--------------------------------|---------------------------
+"Upsert"          | Update if exists, else insert  | "Write upsert query"
+"Idempotent"      | Safe to run multiple times     | "Make script idempotent"
+"Atomic"          | All-or-nothing transactions    | "Ensure atomic transfer"
+"Recursive"       | Function calls itself          | "Write recursive search"
+"Memoization"     | Cache results for speed        | "Optimize with memoization"
+"ETL"             | Extract, Transform, Load       | "Write ETL script"
+"Regex"           | Pattern matching               | "Write regex for emails"
+
+--------------------------------------------------------------------------------
+PHASE 4: SECURITY & QUALITY
+--------------------------------------------------------------------------------
+KEYWORD           | WHAT IT DOES                    | EXAMPLE
+------------------|--------------------------------|---------------------------
+"Sanitize"        | Clean inputs to stop hacks     | "Sanitize all inputs"
+"OWASP Top 10"    | Check common vulnerabilities   | "Review for OWASP Top 10"
+"Edge Cases"      | Handle weird scenarios         | "Handle edge cases"
+"Production-ready"| Add logging/error handling     | "Make production-ready"
+"Robust"          | Doesn't crash easily           | "Make error handling robust"
+"Circuit Breaker" | Stop calling broken services   | "Implement circuit breaker"
+"Complexity"      | Measure code difficulty        | "Reduce cyclomatic complexity"
+
+--------------------------------------------------------------------------------
+PHASE 5: DEBUGGING & EXPLANATION
+--------------------------------------------------------------------------------
+KEYWORD           | WHAT IT DOES                    | EXAMPLE
+------------------|--------------------------------|---------------------------
+"Root Cause"      | Find WHY it broke              | "Perform root cause analysis"
+"Dry Run"         | Step through code mentally     | "Dry run with input X"
+"ELI5"            | Explain simply                 | "Explain ELI5"
+"Annotate"        | Add explanatory comments       | "Annotate every line"
+"Visualize"       | Draw diagrams                  | "Visualize as Mermaid chart"
+"Refactor"        | Rewrite without changing output| "Refactor to be cleaner"
+"Step by step"    | Chain-of-thought reasoning     | "Think step by step"
+
+
+================================================================================
+PART 13: THE MASTER FORMULA
+================================================================================
+
+Combine ONE keyword from each layer for powerful prompts:
+
+--------------------------------------------------------------------------------
+"Act as a [ROLE].
+ Write a [TASK] that is [QUALITY KEYWORD].
+ Ensure it handles [DATA KEYWORD] and uses [SECURITY KEYWORD].
+ Output as [FORMAT]."
+--------------------------------------------------------------------------------
+
+EXAMPLE 1 (DevOps):
+"Act as a Senior DevOps Engineer.
+ Write a Python script to backup a database.
+ Ensure it is idempotent and uses atomic transactions.
+ Sanitize the inputs.
+ Output code only."
+
+EXAMPLE 2 (Backend):
+"Act as a Senior Java Developer.
+ Write a REST endpoint for user registration.
+ Ensure it is production-ready and handles edge cases.
+ Sanitize all inputs and check OWASP Top 10.
+ Output code with comments."
+
+EXAMPLE 3 (Data):
+"Act as a Data Engineer.
+ Write an ETL script for CSV to PostgreSQL.
+ Ensure it uses batch processing and is idempotent.
+ Add logging for debugging.
+ Output code with explanation."
+
+
+================================================================================
+PART 14: QUICK REFERENCE - ALL KEYWORDS BY CATEGORY
+================================================================================
+
+CATEGORY            | TOP KEYWORDS
+--------------------|----------------------------------------------------------
+Identity/Role       | Act as, You are, Senior, Expert, Simulate
+Actions             | Refactor, Debug, Optimize, Document, Convert, Scaffold
+Format              | Table, Bullet points, JSON, Code only, Mermaid
+Tone/Audience       | ELI5, Professional, Concise, Technical, For a beginner
+Constraints         | Only, Limit to, Do not, Standard library, Modern
+Quality             | Idiomatic, Production-ready, Robust, Type-safe
+Safety (Code)       | Idempotent, Atomic, Edge cases, Graceful degradation
+Security            | Sanitize, OWASP, Least Privilege, Zero Trust, JWT
+Performance         | Lazy loading, Memoization, N+1, Batch, HashMap
+Testing             | Happy path, Edge cases, Mock, Unit test, Regression
+Architecture        | Clean Architecture, SOLID, Microservices, Event-driven
+Cloud/IaC           | Provision, Cold start, Drift, Region-agnostic
+AI/ML               | RAG, Embeddings, Inference, Token limit
+SRE                 | Instrument, Circuit breaker, Fuzzing, Telemetry
+Concurrency         | Mutex, Thread-safe, Non-blocking, Deadlock
+Debugging           | Root cause, Dry run, Trace, Annotate
+Chain-of-Thought    | Step by step, Show reasoning, Break down, Verify
+
+
+================================================================================
+PART 15: FINAL TIPS FOR DEVELOPERS
+================================================================================
+
+1. USE THE TECHNICAL TERM
+   If you know the concept name (Mutex, Circuit Breaker, Memoization),
+   use it. The AI will instantly treat you as an expert and respond
+   accordingly.
+
+2. IF YOU DON'T KNOW THE TERM
+   Ask: "What is the engineering term for when I want to stop my app
+   from calling a broken API?"
+   Answer: "Circuit Breaker"
+   Then use that keyword in your actual prompt.
+
+3. COMBINE KEYWORDS FROM MULTIPLE CATEGORIES
+   Role + Task + Quality + Security + Format = Powerful prompt
+
+4. USE CHAIN-OF-THOUGHT FOR COMPLEX PROBLEMS
+   Add "Let's think step by step" for math, logic, and debugging.
+
+5. ITERATE
+   First draft is rarely perfect. Refine with follow-up keywords:
+   "Make it more concise"
+   "Add error handling"
+   "Show edge cases"
+
+6. BE SPECIFIC
+   "Refactor" → "Apply Extract Method to the validation logic"
+   "Optimize" → "Reduce time complexity to O(n log n)"
+   "Test" → "Write unit tests covering happy path and null inputs"
+
+
+================================================================================
+END OF COMPLETE PROMPT ENGINEERING REFERENCE
+================================================================================
+
+You now have the complete vocabulary from Beginner to Architect level.
+The "keyword" to unlock the next level is simply knowing the NAME of
+what you want. Use these terms, and AI will respond like a colleague.
+
+================================================================================
