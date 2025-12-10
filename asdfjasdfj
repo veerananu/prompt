@@ -1,0 +1,135 @@
+================================================================================
+                         PROMPTING TYPES GUIDE
+================================================================================
+
+This guide explains different ways to ask AI questions and when to use each.
+
+
+================================================================================
+PART 1: GENERAL PROMPTING TYPES
+================================================================================
+
+1. OPEN-ENDED PROMPTS
+---------------------
+What it is:  A broad question with no single right answer.
+Example:     "How can I be healthier?"
+Use when:    You want ideas, explanations, or creativity.
+Pro tip:     Add constraints to focus the response.
+             Example: "Give me 5 budget-friendly ways to be healthier."
+
+
+2. SPECIFIC/CLOSED PROMPTS
+--------------------------
+What it is:  A question with one exact answer.
+Example:     "How many days are in February during a leap year?"
+Use when:    You need a fact or a short answer.
+Pro tip:     Say "Answer ONLY from provided text" if you gave context.
+
+
+3. MULTIPLE CHOICE PROMPTS
+--------------------------
+What it is:  You give options to pick from.
+Example:     "Is this review positive, negative, or neutral?"
+Use when:    You want the AI to categorize or classify something.
+Pro tip:     Say "Return only the letter" for cleaner output.
+
+
+4. HYPOTHETICAL PROMPTS
+-----------------------
+What it is:  "What if" questions.
+Example:     "What would happen if I didn't water my plants for a month?"
+Use when:    You want to explore possibilities or plan ahead.
+Pro tip:     Ask the AI to list its assumptions first.
+
+
+5. OPINION-BASED PROMPTS
+------------------------
+What it is:  Ask the AI to argue a side.
+Example:     "Give me 3 reasons why dogs are better than cats."
+Use when:    You want to see different perspectives or build an argument.
+Pro tip:     Give a specific stance to argue for clearer results.
+
+
+================================================================================
+PART 2: CODE-SPECIFIC PROMPTING TYPES
+================================================================================
+
+1. CODE COMPLETION
+------------------
+What it is:  You have partial code and want the AI to finish it.
+Example:     "Complete this function that calculates the average of a list."
+Use when:    You have started code but need help finishing it.
+Pro tip:     Also ask for error handling and comments.
+
+Better prompt example:
+    "Complete this function AND add error handling if the list is empty.
+     Include docstrings explaining what the function does."
+
+
+2. CODE TRANSLATION
+-------------------
+What it is:  Convert code from one language to another.
+Example:     "Convert this Python code to JavaScript."
+Use when:    You need the same logic in a different programming language.
+Pro tip:     Ask it to use the new language's best practices.
+
+Better prompt example:
+    "Convert this Python code to JavaScript using modern ES6 conventions.
+     Use arrow functions and const/let instead of var."
+
+
+3. CODE OPTIMIZATION
+--------------------
+What it is:  Make your code faster or cleaner.
+Example:     "Make this function run faster."
+Use when:    Your code works but is slow or messy.
+Pro tip:     Ask it to explain the speed improvement.
+
+Better prompt example:
+    "Optimize this function and explain:
+     - The Big O complexity before optimization
+     - The Big O complexity after optimization
+     - Why the new version is faster"
+
+
+4. CODE DEBUGGING
+-----------------
+What it is:  Your code has a bug and you need help fixing it.
+Example:     "Why isn't this working?"
+Use when:    Your code has errors or unexpected behavior.
+Pro tip:     Ask for three things: cause, fix, and prevention.
+
+Better prompt example:
+    "My code has a bug. Please tell me:
+     1. What is causing this bug (root cause)
+     2. How to fix it (solution)
+     3. How to avoid this mistake next time (prevention tip)"
+
+
+================================================================================
+QUICK REFERENCE TABLE
+================================================================================
+
+GENERAL PROMPTS:
+----------------
+Type              | Use Case                  | Example
+------------------|---------------------------|--------------------------------
+Open-ended        | Brainstorming, ideas      | "How can I improve X?"
+Specific/Closed   | Facts, lookup             | "What is X?"
+Multiple choice   | Classification            | "Is this A, B, or C?"
+Hypothetical      | Scenario planning         | "What if X happened?"
+Opinion-based     | Debate, perspectives      | "Why is X better than Y?"
+
+CODE PROMPTS:
+-------------
+Type              | Use Case                  | Pro Tip
+------------------|---------------------------|--------------------------------
+Completion        | Finish partial code       | Ask for error handling
+Translation       | Convert to new language   | Ask for idiomatic conventions
+Optimization      | Make code faster          | Ask for Big O explanation
+Debugging         | Fix broken code           | Ask for cause, fix, prevention
+
+
+================================================================================
+                              END OF GUIDE
+================================================================================
