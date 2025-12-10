@@ -1,0 +1,1571 @@
+================================================================================
+         PROMPT ENGINEERING EXAMPLES - ONE FOR EVERY CONCEPT
+================================================================================
+
+
+================================================================================
+SECTION 1: THE 8 CORE TIPS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+TIP #1: USE XML TAGS - EXAMPLE
+--------------------------------------------------------------------------------
+
+WITHOUT XML TAGS (Bad):
+"You are a code reviewer. Here is my Python code def add(a,b): return a+b 
+Please find any bugs and suggest improvements."
+
+WITH XML TAGS (Good):
+"<role>You are a senior Python code reviewer.</role>
+
+<code>
+def add(a, b):
+    return a + b
+</code>
+
+<task>
+1. Identify any bugs or issues
+2. Suggest improvements for production use
+3. Rate the code quality from 1-10
+</task>"
+
+
+--------------------------------------------------------------------------------
+TIP #2: BE SPECIFIC - EXAMPLE
+--------------------------------------------------------------------------------
+
+VAGUE (Bad):
+"Write something about machine learning."
+
+SPECIFIC (Good):
+"Write a 150-word explanation of supervised learning for a college freshman.
+Include:
+- 1 real-world example (e.g., spam detection)
+- The difference between training and testing data
+- No mathematical formulas"
+
+
+--------------------------------------------------------------------------------
+TIP #3: MIMIC THE DESIRED TONE - EXAMPLE
+--------------------------------------------------------------------------------
+
+CASUAL INPUT → CASUAL OUTPUT:
+"hey can u explain what an API is? keep it chill, like you're texting a friend"
+
+FORMAL INPUT → FORMAL OUTPUT:
+"Please provide a professional explanation of Application Programming 
+Interfaces (APIs) suitable for inclusion in technical documentation 
+intended for enterprise stakeholders."
+
+
+--------------------------------------------------------------------------------
+TIP #4: PROOFREAD YOUR PROMPTS - EXAMPLE
+--------------------------------------------------------------------------------
+
+UNPROOFREAD (Bad):
+"writ a funtion that takes a strng and returns it backwrds dont use built in methods"
+
+PROOFREAD (Good):
+"Write a function that takes a string and returns it reversed. 
+Do not use built-in reverse methods. Use Python 3."
+
+
+--------------------------------------------------------------------------------
+TIP #5: WRITE IN YOUR STRONGEST LANGUAGE - EXAMPLE
+--------------------------------------------------------------------------------
+
+AWKWARD NON-NATIVE (Bad):
+"Please to make the code for sorting the numbers in the array by the 
+bigness from small to big."
+
+NATIVE LANGUAGE THEN TRANSLATE (Good):
+Write your prompt in your native language:
+"Escribe una función en Python que ordene una lista de números de menor a mayor."
+
+The AI understands this perfectly and responds appropriately.
+
+
+--------------------------------------------------------------------------------
+TIP #6: PREFILLING (PRIME THE RESPONSE) - EXAMPLE
+--------------------------------------------------------------------------------
+
+WITHOUT PREFILLING:
+User: "Convert this data to JSON: name=John, age=30, city=NYC"
+AI: "Sure! I'd be happy to help you convert that data to JSON format. 
+     Here's the result: {"name": "John"..."
+
+WITH PREFILLING:
+User: "Convert this data to JSON: name=John, age=30, city=NYC
+
+Output: {"
+AI: "name": "John", "age": 30, "city": "NYC"}"
+
+The AI continues directly from where you left off.
+
+
+--------------------------------------------------------------------------------
+TIP #7: AVOID NEGATIVE PROMPTING - EXAMPLE
+--------------------------------------------------------------------------------
+
+NEGATIVE (Bad):
+"Explain quantum computing. Don't use jargon. Don't make it too long. 
+Don't assume I know physics. Don't use analogies that are too simple."
+
+POSITIVE (Good):
+"Explain quantum computing in 100 words using everyday language. 
+Assume I have a high school education. Use one analogy comparing 
+it to something familiar like a coin flip."
+
+
+--------------------------------------------------------------------------------
+TIP #8: PUT INSTRUCTIONS IN USER MESSAGE - EXAMPLE
+--------------------------------------------------------------------------------
+
+BAD STRUCTURE:
+System: "You are an expert Python developer. Always use type hints. 
+        Follow PEP8. Include error handling. Add docstrings. 
+        Use modern Python 3.10+ syntax. Consider edge cases..."
+
+User: "Write a function to validate emails."
+
+GOOD STRUCTURE:
+System: "You are an expert Python developer."
+
+User: "Write a function to validate emails.
+
+Requirements:
+- Use Python 3.10+ with type hints
+- Follow PEP8 conventions
+- Include try/except error handling
+- Add a docstring explaining parameters and return value
+- Handle edge cases: empty string, None input, missing @ symbol"
+
+
+================================================================================
+SECTION 2: DELIMITERS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+TRIPLE QUOTES EXAMPLE
+--------------------------------------------------------------------------------
+Summarize the key points from this customer feedback:
+
+"""
+I've been using your product for 3 months now. The interface is intuitive 
+but the mobile app crashes frequently. Customer support was helpful when 
+I reported the issue. I'd recommend it to others despite the bugs.
+"""
+
+Format: 3 bullet points
+
+
+--------------------------------------------------------------------------------
+XML TAGS EXAMPLE
+--------------------------------------------------------------------------------
+<context>
+I'm building a REST API for an e-commerce platform.
+</context>
+
+<current_code>
+@app.route('/products')
+def get_products():
+    return products
+</current_code>
+
+<task>
+Add pagination with page and limit query parameters.
+Default: page=1, limit=10
+</task>
+
+
+--------------------------------------------------------------------------------
+MARKDOWN HEADERS EXAMPLE
+--------------------------------------------------------------------------------
+### Role
+You are a database administrator with 10 years of experience.
+
+### Context
+We have a PostgreSQL database with 50 million user records.
+Queries are taking 30+ seconds.
+
+### Task
+Suggest 3 indexing strategies to improve query performance.
+
+### Output Format
+Numbered list with SQL examples for each strategy.
+
+
+--------------------------------------------------------------------------------
+COLONS AND LABELS EXAMPLE
+--------------------------------------------------------------------------------
+ROLE: Technical writer
+TASK: Rewrite this error message to be user-friendly
+INPUT: "Error 0x80070005: Access Denied - HRESULT exception thrown"
+AUDIENCE: Non-technical end users
+LENGTH: Under 20 words
+
+
+--------------------------------------------------------------------------------
+DASHES EXAMPLE
+--------------------------------------------------------------------------------
+Review this SQL query for security vulnerabilities:
+
+---
+SELECT * FROM users WHERE username = '" + userInput + "' AND password = '" + passInput + "'
+---
+
+Identify the vulnerability and show the secure version.
+
+
+--------------------------------------------------------------------------------
+BRACKETS EXAMPLE
+--------------------------------------------------------------------------------
+Write a product description with these parameters:
+
+[PRODUCT]: Wireless Bluetooth Headphones
+[TONE]: Enthusiastic but professional
+[LENGTH]: 50-75 words
+[AUDIENCE]: Tech-savvy millennials
+[INCLUDE]: Battery life, noise cancellation, price point ($149)
+
+
+--------------------------------------------------------------------------------
+BEGIN/END MARKERS EXAMPLE
+--------------------------------------------------------------------------------
+Extract all dates mentioned in this legal document:
+
+BEGIN DOCUMENT
+This agreement is effective as of January 15, 2024. The initial term 
+shall be twelve months, ending on January 14, 2025. Either party may 
+terminate with 30 days written notice. Annual review scheduled for 
+July 1, 2024.
+END DOCUMENT
+
+Output: List of dates in YYYY-MM-DD format
+
+
+================================================================================
+SECTION 3: CORE PROMPTING TACTICS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+TACTIC 1: SET CLEAR GOALS - EXAMPLE
+--------------------------------------------------------------------------------
+
+UNCLEAR GOAL:
+"Tell me about React hooks."
+
+CLEAR GOAL:
+"Create a comparison table of the 5 most common React hooks (useState, 
+useEffect, useContext, useRef, useMemo).
+
+Columns: Hook Name | Purpose | When to Use | Example Use Case
+
+Target audience: Developer who knows React basics but hasn't used hooks yet."
+
+
+--------------------------------------------------------------------------------
+TACTIC 2: GIVE CONTEXT - EXAMPLE
+--------------------------------------------------------------------------------
+
+NO CONTEXT:
+"How should I handle this error?"
+
+WITH CONTEXT:
+"Context: I'm building a Node.js Express API for a banking application. 
+We process 10,000 transactions per minute. This is a production system 
+with strict uptime requirements.
+
+Error: 'ECONNRESET' when calling our payment provider's API
+
+Question: How should I handle this error to ensure no transactions are lost?"
+
+
+--------------------------------------------------------------------------------
+TACTIC 3: FEW-SHOT PROMPTING - EXAMPLE
+--------------------------------------------------------------------------------
+
+"I need you to generate product taglines in a specific style.
+
+Example 1:
+Product: Running shoes
+Tagline: "Every step writes your story."
+
+Example 2:
+Product: Coffee maker
+Tagline: "Mornings worth waking up for."
+
+Example 3:
+Product: Laptop
+Tagline: "Where ideas become reality."
+
+Now generate a tagline for:
+Product: Electric toothbrush"
+
+
+--------------------------------------------------------------------------------
+TACTIC 4: BE SPECIFIC - EXAMPLE
+--------------------------------------------------------------------------------
+
+VAGUE:
+"Make my code better."
+
+SPECIFIC:
+"Refactor this JavaScript function to:
+1. Reduce cyclomatic complexity from 12 to under 5
+2. Extract the validation logic into a separate helper function
+3. Replace the nested if-else with early returns
+4. Add JSDoc comments for parameters and return type
+
+```javascript
+function processOrder(order) {
+    if (order) {
+        if (order.items) {
+            if (order.items.length > 0) {
+                // ... 50 more lines of nested code
+            }
+        }
+    }
+}
+```"
+
+
+--------------------------------------------------------------------------------
+TACTIC 5: ITERATE - EXAMPLE
+--------------------------------------------------------------------------------
+
+Round 1:
+User: "Explain blockchain to me."
+AI: [Gives technical 500-word explanation]
+
+Round 2 (Iteration):
+User: "Too long and too technical. Explain it in 2 sentences 
+      using a library book analogy."
+AI: "Blockchain is like a library where every book ever borrowed is 
+     recorded permanently, and every library member has a copy of that 
+     record. If someone tries to fake a borrowing record, everyone else's 
+     copies would show it doesn't match."
+
+Round 3 (Further iteration):
+User: "Perfect. Now add one sentence about why this makes it secure."
+
+
+--------------------------------------------------------------------------------
+TACTIC 6: CHAIN-OF-THOUGHT - EXAMPLE
+--------------------------------------------------------------------------------
+
+WITHOUT CHAIN-OF-THOUGHT:
+"A train leaves Station A at 9:00 AM traveling 60 mph. Another train 
+leaves Station B (300 miles away) at 10:00 AM traveling 90 mph toward 
+Station A. When do they meet?"
+
+WITH CHAIN-OF-THOUGHT:
+"A train leaves Station A at 9:00 AM traveling 60 mph. Another train 
+leaves Station B (300 miles away) at 10:00 AM traveling 90 mph toward 
+Station A. When do they meet?
+
+Solve this step by step:
+1. First, calculate how far Train A travels before Train B starts
+2. Then, calculate the remaining distance between them at 10:00 AM
+3. Then, find their combined closing speed
+4. Finally, calculate when they meet
+
+Show all calculations."
+
+
+================================================================================
+SECTION 4: PROMPT TYPES - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+OPEN-ENDED PROMPT EXAMPLE
+--------------------------------------------------------------------------------
+"Brainstorm 10 creative ways a small coffee shop could use AI to improve 
+customer experience. Include both realistic near-term ideas and 
+ambitious long-term concepts."
+
+
+--------------------------------------------------------------------------------
+SPECIFIC/CLOSED PROMPT EXAMPLE
+--------------------------------------------------------------------------------
+"Based ONLY on the following product specifications, answer: 
+Does this laptop support USB-C charging?
+
+Specifications:
+- Ports: 2x USB-A 3.0, 1x HDMI 2.0, 1x 3.5mm audio
+- Power: 65W AC adapter, barrel connector
+- Battery: 45Wh lithium-ion
+
+Answer only 'Yes' or 'No' with a one-sentence explanation."
+
+
+--------------------------------------------------------------------------------
+MULTIPLE CHOICE PROMPT EXAMPLE
+--------------------------------------------------------------------------------
+"Classify this customer support ticket into one category.
+
+Ticket: 'I was charged twice for my order #12345. Please refund 
+the duplicate charge.'
+
+Categories:
+A) Technical Issue
+B) Billing/Payment
+C) Shipping/Delivery
+D) Product Question
+E) Account Access
+
+Return ONLY the letter."
+
+
+--------------------------------------------------------------------------------
+HYPOTHETICAL PROMPT EXAMPLE
+--------------------------------------------------------------------------------
+"Scenario: Our company's main database server fails during Black Friday, 
+our busiest sales day.
+
+First, list your assumptions about:
+- Our infrastructure setup
+- Backup systems in place
+- Team availability
+
+Then, provide a step-by-step incident response plan."
+
+
+--------------------------------------------------------------------------------
+OPINION-BASED PROMPT EXAMPLE
+--------------------------------------------------------------------------------
+"Argue the position that microservices architecture is BETTER than 
+monolithic architecture for a startup with 5 developers.
+
+Then argue the OPPOSITE position with equal conviction.
+
+Finally, give a balanced recommendation based on both perspectives."
+
+
+================================================================================
+SECTION 5: MASTER FRAMEWORKS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+R-C-T-F FRAMEWORK EXAMPLE
+--------------------------------------------------------------------------------
+# ROLE
+Act as a senior DevOps engineer with expertise in AWS and Kubernetes.
+
+# CONTEXT
+We're migrating a legacy monolithic Java application to microservices.
+Current state: Single EC2 instance, 50GB PostgreSQL database, 10,000 daily users.
+Goal: Zero-downtime migration over 3 months.
+
+# TASK
+Create a high-level migration plan with phases and key milestones.
+
+# CONSTRAINTS & FORMAT
+- Tone: Technical but accessible to non-DevOps stakeholders
+- Length: 1 page maximum
+- Output Format: Numbered phases with bullet points for each milestone
+
+
+--------------------------------------------------------------------------------
+S.P.E.C. FRAMEWORK EXAMPLE (CODING)
+--------------------------------------------------------------------------------
+# STACK
+Python 3.11 with FastAPI framework, Pydantic for validation, 
+SQLAlchemy for ORM, PostgreSQL database
+
+# PATTERN
+Follow repository pattern with dependency injection.
+Use async/await for all database operations.
+Follow PEP8 and use type hints throughout.
+
+# ERRORS
+Handle these edge cases:
+- User not found (return 404)
+- Duplicate email (return 409 Conflict)
+- Database connection failure (return 503)
+- Invalid input format (return 422)
+
+# COMMENTS
+Include docstrings for all functions with:
+- Description
+- Parameters with types
+- Return type
+- Raises (exceptions)
+
+# THE GOAL
+Create a user registration endpoint that validates email uniqueness.
+
+
+--------------------------------------------------------------------------------
+UNIVERSAL TEMPLATE EXAMPLE
+--------------------------------------------------------------------------------
+You are a senior technical writer.
+
+Task:
+Write release notes for version 2.5.0 of our mobile app.
+
+Context:
+- This is a B2B expense management app
+- Main users are finance teams at mid-size companies
+- This release includes 3 new features and 5 bug fixes
+
+Requirements:
+- Start with a brief summary (2 sentences)
+- Group changes into "New Features" and "Bug Fixes"
+- Each item should be 1-2 sentences max
+- Use past tense ("Added", "Fixed", not "Add", "Fix")
+
+Output format:
+Markdown with headers
+
+Target audience:
+IT administrators who will distribute the update to employees
+
+
+--------------------------------------------------------------------------------
+HALLUCINATION-PROOF FORMULA EXAMPLE
+--------------------------------------------------------------------------------
+Context:
+"""
+ACME Corp Employee Handbook - Section 4.2 PTO Policy
+
+Full-time employees accrue 15 days of PTO annually, earned at 1.25 days 
+per month. PTO can be carried over up to 5 days maximum. Employees must 
+request PTO at least 2 weeks in advance for requests over 3 consecutive 
+days. Manager approval is required for all PTO requests. Unused PTO is 
+not paid out upon termination.
+"""
+
+Task: Answer this employee question: "Can I carry over 10 unused PTO days 
+to next year?"
+
+Constraint: Answer using ONLY the information in the Context above. 
+Do not use any outside knowledge about typical PTO policies.
+
+Escape Hatch: If the answer cannot be determined from the context, 
+respond with "This information is not specified in the provided policy."
+
+
+================================================================================
+SECTION 6: KEYWORD CATEGORIES - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+CATEGORY 1: IDENTITY KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+"Act as..."
+→ "Act as a skeptical investor reviewing a startup pitch deck."
+
+"You are a..."
+→ "You are a strict grammar teacher who marks every error."
+
+"Simulate..."
+→ "Simulate a technical phone screen for a junior React developer position."
+
+"Pretend you are..."
+→ "Pretend you are a customer who is frustrated with slow shipping."
+
+
+--------------------------------------------------------------------------------
+CATEGORY 2: ACTION KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+Instead of "Write" → Use specific verbs:
+
+"Draft a first version of an apology email to customers about the outage."
+
+"Outline the main sections for a technical blog post about GraphQL."
+
+"Brainstorm 15 potential names for a new fitness app."
+
+"Compose a formal letter declining a job offer."
+
+Instead of "Fix" → Use specific verbs:
+
+"Debug this function - explain what's wrong and show the corrected code."
+
+"Refactor this class to follow single responsibility principle."
+
+"Optimize this SQL query to reduce execution time."
+
+"Patch this security vulnerability in the authentication flow."
+
+
+--------------------------------------------------------------------------------
+CATEGORY 3: FORMAT KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+"Table"
+→ "Create a table comparing AWS, Azure, and GCP with columns for: 
+   Compute, Storage, Pricing Model, Free Tier."
+
+"Bullet points"
+→ "Summarize the main arguments of this article in 5 bullet points."
+
+"Step-by-step"
+→ "Explain how to set up SSH keys in a step-by-step tutorial format."
+
+"JSON"
+→ "Convert this user profile information into a JSON object."
+
+"Code only"
+→ "Write the function. Code only, no explanation needed."
+
+"Numbered list"
+→ "Rank the top 10 programming languages by job demand as a numbered list."
+
+
+--------------------------------------------------------------------------------
+CATEGORY 4: TONE & AUDIENCE KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+"ELI5"
+→ "ELI5: How does HTTPS encryption work?"
+
+"Professional"
+→ "Rewrite this casual Slack message in a professional tone for an email 
+   to the CEO."
+
+"Concise"
+→ "Explain machine learning. Be concise - maximum 3 sentences."
+
+"For a [audience]"
+→ "Explain API rate limiting for a product manager with no technical 
+   background."
+
+
+--------------------------------------------------------------------------------
+CATEGORY 5: CONSTRAINT KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+"Only"
+→ "Use only the standard library - no external packages."
+
+"Limit to"
+→ "Limit your response to exactly 100 words."
+
+"Do not"
+→ "Do not include any code examples, explain in plain English only."
+
+"Exclude"
+→ "List project management tools. Exclude any that require paid subscriptions."
+
+"Focus on"
+→ "Review this code. Focus only on security vulnerabilities, ignore style."
+
+
+================================================================================
+SECTION 7: CODING-SPECIFIC KEYWORDS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+7.1 STACK KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+"In Python 3.11, using only the standard library, write a function that..."
+
+"Using React 18 with TypeScript and functional components with hooks..."
+
+"Write this in Go 1.21 using the gin-gonic web framework..."
+
+"For Node.js 20 with Express 4.x and Mongoose ODM..."
+
+
+--------------------------------------------------------------------------------
+7.2 ACTION KEYWORDS FOR CODE - EXAMPLES
+--------------------------------------------------------------------------------
+
+REFACTOR:
+"Refactor this 200-line function into smaller, testable units. 
+Keep the same behavior."
+
+DEBUG:
+"Debug this code. Error message: 'TypeError: Cannot read property 
+map of undefined' on line 45."
+
+OPTIMIZE:
+"Optimize this nested loop. Current complexity is O(n³), target O(n²) or better."
+
+DOCUMENT:
+"Document this API endpoint with JSDoc including all parameters, 
+return values, and error codes."
+
+SCAFFOLD:
+"Scaffold a new Express.js project with folder structure for routes, 
+controllers, models, and middleware."
+
+
+--------------------------------------------------------------------------------
+7.3 QUALITY KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+PRODUCTION-READY:
+"Write a production-ready file upload service with:
+- Input validation
+- Error handling
+- Logging
+- Rate limiting
+- Virus scanning"
+
+ROBUST:
+"Make this function robust against: null inputs, empty arrays, 
+network timeouts, and malformed JSON."
+
+IDIOMATIC:
+"Rewrite this Python code to be idiomatic. Use list comprehensions, 
+context managers, and Pythonic naming conventions."
+
+
+--------------------------------------------------------------------------------
+7.4 ARCHITECTURE KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+DESIGN PATTERN:
+"Implement the Observer pattern in TypeScript for a notification system."
+
+MODULAR:
+"Refactor this monolithic script into modular, reusable components."
+
+SOLID:
+"Review this class for SOLID principle violations. Focus especially on 
+Single Responsibility and Dependency Inversion."
+
+DRY:
+"This code has duplicate logic in 4 places. Apply DRY principle and 
+extract to a shared utility."
+
+
+--------------------------------------------------------------------------------
+7.5 TESTING KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+HAPPY PATH:
+"Write unit tests covering the happy path - valid inputs producing 
+expected outputs."
+
+EDGE CASES:
+"Add tests for edge cases: empty string, null, negative numbers, 
+extremely large values, unicode characters."
+
+MOCK:
+"Test this service. Mock the database calls and external API requests."
+
+TDD:
+"Using TDD approach: First write failing tests for a password validator, 
+then implement the function to make them pass."
+
+
+--------------------------------------------------------------------------------
+7.6 PERFORMANCE KEYWORDS - EXAMPLES
+--------------------------------------------------------------------------------
+
+TIME COMPLEXITY:
+"Analyze the time complexity of this algorithm. Then rewrite it to 
+achieve O(n log n) instead of O(n²)."
+
+MEMOIZATION:
+"This recursive Fibonacci is slow. Optimize using memoization."
+
+LAZY LOADING:
+"Implement lazy loading for the images in this product grid component."
+
+CACHING:
+"Add Redis caching to this database query. Cache for 5 minutes."
+
+
+================================================================================
+SECTION 8: ADVANCED KEYWORDS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+8.1 IDIOMATIC KEYWORD - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Convert this Java-style Python code to idiomatic Python:
+
+```python
+# Java-style (not idiomatic)
+result = []
+for i in range(len(items)):
+    if items[i].is_active == True:
+        result.append(items[i].name.upper())
+
+# Rewrite to be idiomatic Python
+```"
+
+RESULT:
+```python
+# Idiomatic Python
+result = [item.name.upper() for item in items if item.is_active]
+```
+
+
+--------------------------------------------------------------------------------
+8.2 SCAFFOLD KEYWORD - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Scaffold a Python FastAPI project with:
+- src/ directory structure
+- routes/, models/, services/, repositories/ folders
+- config/ for environment settings
+- tests/ mirroring src/ structure
+- requirements.txt with FastAPI, uvicorn, pydantic
+- .env.example file
+- README.md with setup instructions
+
+Create placeholder files with TODO comments."
+
+
+--------------------------------------------------------------------------------
+8.3 DRY RUN KEYWORD - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Dry run this function with input [5, 3, 8, 1, 9]:
+
+```python
+def mystery(arr):
+    result = arr[0]
+    for i in range(1, len(arr)):
+        if arr[i] > result:
+            result = arr[i]
+    return result
+```
+
+Show the value of 'result' after each iteration."
+
+
+--------------------------------------------------------------------------------
+8.4 ROOT CAUSE ANALYSIS - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Perform root cause analysis on this bug:
+
+Symptom: Users report being randomly logged out
+Frequency: Happens to ~5% of users, mostly on mobile
+Recent changes: Deployed new authentication service last Tuesday
+
+Don't just suggest fixes - explain the chain of causation that could 
+lead to this behavior."
+
+
+--------------------------------------------------------------------------------
+8.5 IDEMPOTENT KEYWORD - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Write an idempotent database migration script that:
+- Adds a 'verified_at' column to the users table
+- Can be run multiple times without errors
+- Checks if column exists before adding
+- Logs what action was taken (added vs. already exists)"
+
+
+--------------------------------------------------------------------------------
+8.6 ATOMIC KEYWORD - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Write an atomic money transfer function in Python with SQLAlchemy:
+- Debit from source account
+- Credit to destination account
+- Both operations must succeed or both must fail
+- Handle insufficient funds
+- Log the transaction"
+
+
+--------------------------------------------------------------------------------
+8.7 GRACEFUL DEGRADATION - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Implement graceful degradation for this image loading component:
+1. Try to load high-res image
+2. If slow connection, fall back to low-res
+3. If that fails, show placeholder
+4. If all else fails, show alt text
+
+Never show a broken image icon."
+
+
+================================================================================
+SECTION 9: CHAIN-OF-THOUGHT - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+9.1 MATH PROBLEM - EXAMPLE
+--------------------------------------------------------------------------------
+
+"A company has 120 employees. 40% are remote, and of those, 75% are in 
+different time zones. How many remote employees are in different time zones?
+
+Let's think step by step:
+1. Calculate number of remote employees
+2. Calculate how many of those are in different time zones
+3. Show final answer"
+
+
+--------------------------------------------------------------------------------
+9.2 DEBUGGING WITH COT - EXAMPLE
+--------------------------------------------------------------------------------
+
+"This code should return the second largest number, but it's not working:
+
+```python
+def second_largest(numbers):
+    numbers.sort()
+    return numbers[-2]
+```
+
+Think step by step:
+1. What does this code currently do?
+2. What inputs would break it?
+3. Trace through with [5, 5, 3, 1]
+4. What's the bug?
+5. Show fixed code"
+
+
+--------------------------------------------------------------------------------
+9.3 ARCHITECTURE DECISION WITH COT - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Should we use SQL or NoSQL for our new user activity tracking system?
+
+Requirements:
+- 100,000 events per second
+- Need to query by user_id and time range
+- Data can be 1-2 minutes delayed
+- Retention: 90 days
+
+Reason through this by:
+1. Listing key requirements
+2. Evaluating SQL pros/cons for each
+3. Evaluating NoSQL pros/cons for each
+4. Making a recommendation with justification"
+
+
+--------------------------------------------------------------------------------
+9.4 CODE REVIEW WITH COT - EXAMPLE
+--------------------------------------------------------------------------------
+
+"Review this authentication code. Think through potential security issues 
+step by step:
+
+```python
+def login(username, password):
+    user = db.query(f"SELECT * FROM users WHERE username='{username}'")
+    if user and user.password == password:
+        return create_session(user)
+    return None
+```
+
+Walk through:
+1. Input handling
+2. Query construction
+3. Password comparison
+4. Session creation
+5. Error handling
+
+For each area, identify issues and severity."
+
+
+================================================================================
+SECTION 10: READY-TO-USE TEMPLATES - FILLED EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+SUMMARIZE TEMPLATE - FILLED EXAMPLE
+--------------------------------------------------------------------------------
+Summarize the following text as a bulleted list for a busy executive.
+Length: about 4-5 bullets, each under 15 words.
+
+Text:
+"""
+Our Q3 results exceeded expectations with revenue up 23% year-over-year. 
+The main drivers were the new enterprise tier launched in July and 
+expansion into the APAC market. Customer churn decreased from 5.2% to 
+3.8%, our lowest ever. However, operating costs increased 15% due to 
+hiring 50 new engineers. We're projecting Q4 revenue of $12M with 
+continued investment in R&D.
+"""
+
+
+--------------------------------------------------------------------------------
+EXPLAIN IN SIMPLE TERMS - FILLED EXAMPLE
+--------------------------------------------------------------------------------
+Explain Docker containers in simple terms for a junior developer 
+who has never used them.
+
+Include:
+1. A 2-3 sentence overview of what containers are
+2. A simple example of why you'd use one
+3. One analogy comparing it to something familiar (like shipping containers)
+
+
+--------------------------------------------------------------------------------
+CODE GENERATION - FILLED EXAMPLE
+--------------------------------------------------------------------------------
+Act as a Senior TypeScript Developer.
+
+Write a utility function that validates and parses email addresses.
+
+Requirements:
+- Use TypeScript 5.0 with strict mode
+- Return an object with { isValid: boolean, username?: string, domain?: string }
+- Handle edge cases: empty string, null, missing @, multiple @ symbols
+- Follow functional programming style (no classes)
+- Include JSDoc comments
+
+Output: Code only, with comments.
+
+
+--------------------------------------------------------------------------------
+DEBUG AN ERROR - FILLED EXAMPLE
+--------------------------------------------------------------------------------
+Analyze the following Python code and the error message below.
+
+1. Identify the root cause of the TypeError
+2. Explain why this error occurs in simple terms
+3. Propose a fix that handles None values gracefully
+4. Show the corrected code
+
+Code:
+```python
+def get_user_names(users):
+    return [user['name'].upper() for user in users]
+
+# Called with:
+data = [{'name': 'Alice'}, None, {'name': 'Bob'}]
+names = get_user_names(data)
+```
+
+Error:
+```
+TypeError: 'NoneType' object is not subscriptable
+```
+
+
+--------------------------------------------------------------------------------
+CODE REVIEW - FILLED EXAMPLE
+--------------------------------------------------------------------------------
+Act as a strict security-focused code reviewer.
+
+Review this Node.js Express endpoint for:
+1. Security vulnerabilities (OWASP Top 10)
+2. Error handling issues
+3. Input validation problems
+4. Potential denial of service vectors
+
+For each issue found, explain:
+- What the problem is
+- Why it's dangerous
+- How to fix it (with code)
+
+Code:
+```javascript
+app.post('/api/upload', (req, res) => {
+    const filename = req.body.filename;
+    const content = req.body.content;
+    fs.writeFileSync('/uploads/' + filename, content);
+    res.send('File saved!');
+});
+```
+
+
+================================================================================
+SECTION 11: SPECIALIST DOMAIN KEYWORDS - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+11.1 CLOUD & INFRASTRUCTURE - EXAMPLES
+--------------------------------------------------------------------------------
+
+PROVISION:
+"Write Terraform code to provision an AWS Lambda function with:
+- API Gateway trigger
+- DynamoDB table access
+- CloudWatch logging
+- Environment variables from SSM Parameter Store"
+
+IDEMPOTENT (DevOps):
+"Write an Ansible playbook to install Nginx that is idempotent - 
+running it twice should produce the same result without errors."
+
+COLD START:
+"Optimize this AWS Lambda function to minimize cold start time. 
+Currently at 3 seconds, target under 500ms."
+
+
+--------------------------------------------------------------------------------
+11.2 AI ENGINEERING - EXAMPLES
+--------------------------------------------------------------------------------
+
+RAG:
+"Write a Python script to implement a basic RAG pipeline:
+1. Load PDF documents
+2. Split into chunks
+3. Create embeddings with OpenAI
+4. Store in a vector database (Pinecone)
+5. Query with semantic search"
+
+EMBEDDINGS:
+"Generate embeddings for these product descriptions and find the 
+3 most similar products to the search query 'comfortable office chair'."
+
+TOKEN LIMIT:
+"This prompt is 5000 tokens but the model limit is 4096. 
+Write a function to intelligently truncate while keeping the 
+most important context."
+
+
+--------------------------------------------------------------------------------
+11.3 DATABASE - EXAMPLES
+--------------------------------------------------------------------------------
+
+INDEXING:
+"This query is slow (5 seconds). Suggest indexing strategies:
+
+SELECT * FROM orders 
+WHERE customer_id = ? 
+AND status = 'pending' 
+AND created_at > NOW() - INTERVAL '7 days'
+ORDER BY created_at DESC
+LIMIT 50"
+
+N+1 PROBLEM:
+"Identify and fix the N+1 query problem in this code:
+
+```python
+users = User.query.all()
+for user in users:
+    print(user.orders.count())  # This queries for each user!
+```"
+
+UPSERT:
+"Write a PostgreSQL upsert query that:
+- Inserts a new user if email doesn't exist
+- Updates name and updated_at if email exists
+- Uses ON CONFLICT clause"
+
+
+--------------------------------------------------------------------------------
+11.4 SECURITY - EXAMPLES
+--------------------------------------------------------------------------------
+
+OWASP TOP 10:
+"Review this login form for OWASP Top 10 vulnerabilities, specifically 
+checking for: SQL Injection, XSS, Broken Authentication."
+
+SANITIZE:
+"Sanitize this user input before using it in:
+1. SQL query
+2. HTML output
+3. Shell command
+4. File path
+
+Input: user_provided_filename"
+
+LEAST PRIVILEGE:
+"Write an AWS IAM policy for a Lambda function that ONLY needs to:
+- Read from S3 bucket 'data-input'
+- Write to DynamoDB table 'results'
+- Write logs to CloudWatch
+
+Apply least privilege - no wildcards."
+
+
+--------------------------------------------------------------------------------
+11.5 SRE & RELIABILITY - EXAMPLES
+--------------------------------------------------------------------------------
+
+CIRCUIT BREAKER:
+"Implement the Circuit Breaker pattern for this API client:
+- CLOSED: Normal operation
+- OPEN: Stop calling after 5 failures, wait 30 seconds
+- HALF-OPEN: Try one request, if success → CLOSED, if fail → OPEN
+
+```python
+def call_payment_api(data):
+    response = requests.post(PAYMENT_URL, json=data)
+    return response.json()
+```"
+
+INSTRUMENT:
+"Instrument this function with metrics:
+- Execution count
+- Duration histogram
+- Error rate
+- Custom tags for payment_method
+
+Use Prometheus client library."
+
+
+--------------------------------------------------------------------------------
+11.6 CONCURRENCY - EXAMPLES
+--------------------------------------------------------------------------------
+
+RACE CONDITION:
+"Identify the race condition in this code and fix it:
+
+```python
+balance = 100
+
+def withdraw(amount):
+    global balance
+    if balance >= amount:
+        time.sleep(0.1)  # Simulates processing
+        balance -= amount
+        return True
+    return False
+
+# Two threads call withdraw(100) simultaneously
+```"
+
+MUTEX:
+"Add proper mutex locking to this thread-unsafe counter:
+
+```python
+class Counter:
+    def __init__(self):
+        self.count = 0
+    
+    def increment(self):
+        self.count += 1
+```"
+
+
+================================================================================
+SECTION 12: SPECIAL TRIGGER PHRASES - EXAMPLES
+================================================================================
+
+"Let's think step by step"
+→ "Calculate the compound interest on $10,000 at 5% for 3 years. 
+   Let's think step by step."
+
+"First, list your assumptions"
+→ "Design a caching strategy for our API. First, list your assumptions 
+   about our traffic patterns and data characteristics."
+
+"Show your work"
+→ "Is this algorithm O(n) or O(n²)? Show your work by counting 
+   operations for input size n."
+
+"Compare and contrast"
+→ "Compare and contrast REST vs GraphQL for a mobile app backend."
+
+"Pros and cons"
+→ "What are the pros and cons of using Kubernetes vs simple Docker 
+   Compose for a 3-person startup?"
+
+"What are the tradeoffs?"
+→ "We can either optimize for read speed or write speed in this 
+   database design. What are the tradeoffs?"
+
+"Walk me through"
+→ "Walk me through what happens when I type 'google.com' in my browser 
+   and press Enter."
+
+"Break this down"
+→ "This error log is confusing. Break this down and explain each part:
+   'FATAL: connection limit exceeded for non-superuser'"
+
+
+================================================================================
+SECTION 13: META-PROMPTING - EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+TREE OF THOUGHTS - EXAMPLE
+--------------------------------------------------------------------------------
+"Use a Tree of Thoughts approach to solve this:
+
+Problem: Our API response time increased from 100ms to 800ms after 
+last week's deployment.
+
+Explore 3 different investigation paths:
+Path A: Database-related causes
+Path B: Code-related causes  
+Path C: Infrastructure-related causes
+
+For each path, explore 2-3 possibilities, then converge on the most 
+likely root cause with reasoning."
+
+
+--------------------------------------------------------------------------------
+DO NOT HALLUCINATE - EXAMPLE
+--------------------------------------------------------------------------------
+"Write the import statements for a Python web scraping script.
+
+IMPORTANT: Do not hallucinate libraries. Only use real, pip-installable 
+packages. If you're unsure whether a library exists, say so.
+
+I need to:
+- Make HTTP requests
+- Parse HTML
+- Handle rate limiting with delays"
+
+
+--------------------------------------------------------------------------------
+CHAIN OF VERIFICATION - EXAMPLE
+--------------------------------------------------------------------------------
+"Generate a SQL query to find all customers who made purchases over $1000 
+in the last 30 days.
+
+After writing the query, perform chain of verification:
+1. Check: Does this handle the date range correctly?
+2. Check: Does this accidentally include deleted/cancelled orders?
+3. Check: Is this vulnerable to SQL injection?
+4. Check: Will this perform well on 10M rows?
+
+Fix any issues found."
+
+
+--------------------------------------------------------------------------------
+FEW-SHOT - EXAMPLE
+--------------------------------------------------------------------------------
+"I'll provide few-shot examples of our code comment style. Follow this 
+exact format:
+
+Example 1:
+```python
+# FUNCTION: validate_email
+# PURPOSE: Checks if string is valid email format
+# RETURNS: True if valid, False otherwise
+# AUTHOR: jsmith, 2024-01-15
+def validate_email(email):
+```
+
+Example 2:
+```python
+# FUNCTION: calculate_tax
+# PURPOSE: Computes tax based on income bracket
+# RETURNS: Decimal tax amount
+# AUTHOR: mjones, 2024-02-20
+def calculate_tax(income):
+```
+
+Now add comments in this exact style to:
+```python
+def send_notification(user_id, message):
+```"
+
+
+================================================================================
+SECTION 14: REAL-WORLD COMPLETE PROMPT EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+EXAMPLE 1: BUG FIX REQUEST
+--------------------------------------------------------------------------------
+
+<context>
+I'm a backend developer working on a Python Flask e-commerce API.
+We're using SQLAlchemy ORM with PostgreSQL.
+This is production code handling real customer orders.
+</context>
+
+<problem>
+Customers report seeing other customers' order history after logging in.
+This started happening after our last deployment on Friday.
+</problem>
+
+<code>
+@app.route('/api/orders')
+def get_orders():
+    user_id = session.get('user_id')
+    orders = Order.query.all()  # Get orders
+    return jsonify([o.to_dict() for o in orders])
+</code>
+
+<task>
+1. Identify the security vulnerability
+2. Explain the risk in business terms
+3. Provide the corrected code
+4. Suggest a test to prevent regression
+</task>
+
+<format>
+Use numbered sections matching the task items.
+Keep explanation under 50 words each.
+</format>
+
+
+--------------------------------------------------------------------------------
+EXAMPLE 2: ARCHITECTURE DESIGN
+--------------------------------------------------------------------------------
+
+Act as a senior system architect with 15 years of experience.
+
+# CONTEXT
+We're designing a real-time multiplayer game backend.
+- Expected users: 100,000 concurrent
+- Actions: Player moves, chat messages, game state updates
+- Latency requirement: Under 50ms
+- Budget: Mid-range startup ($10k/month infrastructure)
+
+# TASK
+Design the high-level architecture.
+
+# REQUIREMENTS
+1. Show components in ASCII diagram
+2. Explain technology choice for each component (1-2 sentences each)
+3. Identify the top 3 scaling challenges
+4. Suggest monitoring approach
+
+# CONSTRAINTS
+- Prefer managed services over self-hosted
+- Must work on AWS
+- Team has experience with Node.js and Python
+
+Think step by step about the data flow before designing.
+
+
+--------------------------------------------------------------------------------
+EXAMPLE 3: CODE GENERATION WITH FULL SPEC
+--------------------------------------------------------------------------------
+
+# ROLE
+Senior TypeScript Developer
+
+# STACK  
+- TypeScript 5.2 (strict mode)
+- Node.js 20 LTS
+- Express 4.x
+- Zod for validation
+- Jest for testing
+
+# TASK
+Create a rate limiter middleware.
+
+# REQUIREMENTS
+1. Limit: 100 requests per minute per IP
+2. Return 429 with Retry-After header when exceeded
+3. Use in-memory storage (Map) for simplicity
+4. Clean up expired entries every 5 minutes
+5. Make limits configurable
+
+# EDGE CASES TO HANDLE
+- Missing X-Forwarded-For header (use req.ip)
+- IPv6 addresses
+- First request from new IP
+
+# OUTPUT
+1. The middleware code with full types
+2. Example usage in Express app
+3. 3 unit tests covering normal, rate-limited, and edge cases
+
+# STYLE
+- Functional approach (no classes)
+- Full JSDoc documentation
+- Explicit return types on all functions
+
+
+================================================================================
+SECTION 15: ANTI-PATTERNS - WHAT NOT TO DO
+================================================================================
+
+--------------------------------------------------------------------------------
+ANTI-PATTERN 1: THE WALL OF TEXT
+--------------------------------------------------------------------------------
+
+BAD:
+"I need help with my code so basically what I'm trying to do is create 
+a function that takes in a list of numbers and then it should find all 
+the duplicates but not just find them it should also count how many 
+times each duplicate appears and then return that as a dictionary but 
+also I want it to be efficient because the list could be really long 
+like maybe a million items and also I'm using Python 3.9 and I don't 
+want to use any external libraries just the standard library and also 
+can you add some comments to explain what's happening and maybe some 
+tests too..."
+
+GOOD:
+"<task>
+Find duplicates in a list and count occurrences.
+</task>
+
+<requirements>
+- Python 3.9, standard library only
+- Handle lists up to 1M items efficiently
+- Return dict: {value: count} for items appearing 2+ times
+- Include comments and 3 test cases
+</requirements>
+
+<example>
+Input: [1, 2, 2, 3, 3, 3]
+Output: {2: 2, 3: 3}
+</example>"
+
+
+--------------------------------------------------------------------------------
+ANTI-PATTERN 2: ASSUMING CONTEXT
+--------------------------------------------------------------------------------
+
+BAD:
+"Why isn't it working?"
+
+GOOD:
+"<code>
+def divide(a, b):
+    return a / b
+
+result = divide(10, 0)
+</code>
+
+<error>
+ZeroDivisionError: division by zero
+</error>
+
+<question>
+How should I handle division by zero? Should I return None, 
+raise a custom exception, or return a default value?
+</question>"
+
+
+--------------------------------------------------------------------------------
+ANTI-PATTERN 3: NEGATIVE-ONLY CONSTRAINTS
+--------------------------------------------------------------------------------
+
+BAD:
+"Write an email. Don't make it too long. Don't be too formal. 
+Don't use jargon. Don't start with 'I hope this email finds you well.' 
+Don't use exclamation points. Don't..."
+
+GOOD:
+"Write a professional email (3-4 sentences) to reschedule a meeting.
+
+Tone: Direct and friendly
+Start with: The reason for rescheduling
+Include: 2 alternative time slots
+End with: Brief apology for inconvenience"
+
+
+--------------------------------------------------------------------------------
+ANTI-PATTERN 4: VAGUE SUCCESS CRITERIA
+--------------------------------------------------------------------------------
+
+BAD:
+"Make my website better."
+
+GOOD:
+"Improve my website's homepage. Specifically:
+
+Current issues:
+1. Load time is 8 seconds (target: under 3 seconds)
+2. Mobile layout is broken on iPhone 12
+3. Call-to-action button has 0.5% click rate (target: 2%)
+
+For each issue, provide:
+- Root cause analysis
+- Specific fix with code
+- Expected improvement"
+
+
+================================================================================
+END OF EXAMPLES DOCUMENT
+================================================================================
+
+Remember:
+- Every example here can be copied and adapted
+- The best prompts combine multiple techniques
+- Iteration is normal - expect 2-3 rounds of refinement
+- When in doubt, add more structure and be more specific
+
+================================================================================
