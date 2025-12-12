@@ -1,0 +1,225 @@
+# copilot-prompt.md — Senior Java Developer Code Review (Java Batch Project)
+
+You are a **Senior Java Developer / Tech Lead**. Perform a **production readiness code review** for this repository’s **Java batch project** (Spring Batch or similar).
+
+## How to run (Copilot)
+- Open this file in VS Code.
+- Open **GitHub Copilot Chat**.
+- Type: **/agent** (if available) then paste:
+  - `Use instructions from copilot-prompt.md. Review the repo.`
+- If agent mode isn’t available, paste the sections below into Copilot Chat and ask it to review specific files.
+
+---
+
+## Goals (Non-negotiable)
+Review for:
+1. Correctness & business logic accuracy
+2. Reliability (restarts, idempotency, retries/skips, error handling)
+3. Performance (chunking, paging, batching, memory, DB access)
+4. Maintainability (structure, naming, duplication, clarity)
+5. Observability (structured logs, metrics, correlation IDs)
+6. Security (PII masking, secrets handling)
+7. Testing (unit/integration, batch test utilities)
+8. Ops readiness (configs, runbook, safe reruns/backfills)
+
+---
+
+## Files to inspect (Priority order)
+1. Job/Step configs: `*BatchConfig*`, `*Job*`, `*Step*`, `application.yml/properties`
+2. Readers/Writers/Processors: `ItemReader`, `ItemProcessor`, `ItemWriter`
+3. Listeners: `JobExecutionListener`, `StepExecutionListener`, `SkipListener`
+4. Services/utilities used in transformations
+5. Build + CI: `build.gradle` / `pom.xml`, GitHub Actions, Docker/K8s if present
+
+If you cannot access some files, continue with what’s available and mark items as **Unknown**.
+
+---
+
+## Review Output Format (STRICT)
+Return the review in exactly this structure:
+
+### A. Executive Summary
+- **Production readiness rating**: ✅ Ready / ⚠️ Conditionally Ready / ❌ Not Ready
+- Top 3 operational risks
+
+### B. Findings (Prioritized)
+For each finding:
+- **Severity**: Blocker / High / Medium / Low
+- **Category**: Correctness / Reliability / Performance / Maintainability / Observability / Security / Testing / Ops
+- **Evidence**: file + class + method + (line numbers if possible)
+- **Why it matters**
+- **Fix recommendation**
+- **Patch**: provide production-ready diff or replacement method/class
+
+### C. Architecture & Design Notes
+- Step boundaries, responsibilities, coupling/cohesion
+- Incremental refactor plan (safe PR-sized changes)
+
+### D. Spring Batch Best Practices Checklist
+List each item as Pass/Fail/Unknown with 1-line notes:
+- Idempotent writes / safe reruns
+- Restartability & JobRepository usage
+- Chunk size & transactions sane
+- DB reads use paging/streaming (not full load)
+- Retry/skip policies intentional + bounded
+- StepScope/JobScope thread safety
+- Parameter validation & fail-fast
+- Proper exit codes / failure propagation
+- No heavy work in listeners (unless justified)
+
+### E. Test Plan Improvements
+- Missing tests + priorities
+- Example JUnit 5 + Spring Batch Test skeletons
+
+### F. Operational Readiness
+- Logging strategy (structured + correlation IDs)
+- Metrics/alerts suggestions
+- Config externalization & environment parity
+- Runbook: run, rerun, restart, backfill, recovery
+
+### G. Next PR Action List
+5–12 tasks ordered by ROI
+
+---
+
+## Required standards
+### Maintainability
+- Single Responsibility; no “god” processors
+- Centralize constants/rules; remove magic numbers
+- Make transformations explicit, deterministic, and testable
+- Avoid static util sprawl unless truly stateless and cohesive
+
+### Reliability
+- Idempotency guarantees: re-run does not duplicate/ corrupt output
+- Clear retry/skip strategies with limits and reporting
+- Defensive validation for inputs and job parameters
+
+### Observability
+- Structured logging: `key=value`
+- Include job/step execution identifiers in logs
+- INFO for lifecycle; DEBUG for per-record details (avoid PII)
+
+### Security
+- Mask PII in logs (IDs, emails, tokens)
+- No secrets in code/config; use env/secret manager patterns
+
+### Performance
+- Avoid loading all data into memory
+- DB: paging readers + batch writers
+- Tune chunk sizes; avoid N+1 queries
+
+---
+
+## Instructions to Copilot (Agent)
+1. Scan the repository structure and identify batch entry points (jobs/steps).
+2. Trace a single record end-to-end: read → process → write.
+3. Identify correctness risks (null handling, joins, field padding/formatting, filtering rules).
+4. Check restartability and idempotency assumptions.
+5. Produce the review output exactly in the required format.
+6. For Top 5 findings, include code patches.
+
+---
+
+## If you need clarification
+Do **not** stop. Make reasonable assumptions and mark uncertain items as **Assumption**.
+
+
+
+
+
+
+
+
+
+
+----------------------------------
+
+
+Act as a Senior Java Developer with 10+ years of experience in enterprise batch processing and Spring Batch. Review this Java batch code for production readiness.
+
+Analyze and provide feedback on:
+
+1. **Architecture**: Batch patterns, SOLID principles, separation of concerns
+2. **Error Handling**: Exception handling, retry/skip policies, transaction management
+3. **Performance**: Chunk size, memory leaks, parallel processing, database optimization
+4. **Code Quality**: Naming conventions, method complexity, code duplication
+5. **Security**: Hardcoded credentials, sensitive data exposure, input validation
+6. **Logging**: Log levels, structured logging, no PII in logs
+7. **Testability**: Unit test coverage, mockability, edge cases
+8. **Configuration**: Externalized config, environment-specific settings
+
+Format your response as:
+- 🔴 CRITICAL: Must fix before production
+- 🟡 MAJOR: Should fix for maintainability
+- 🟢 MINOR: Suggestions for improvement
+- ✅ GOOD: What's done well
+
+Include specific line references and code fix suggestions.
+
+
+-------------------
+
+Act as a Senior Java Developer / Tech Lead with 10+ years in enterprise batch processing. Perform a production-readiness code review for the ENTIRE Java batch project in this repository.
+
+Scan and Review:
+- ALL Java files in src/main/java and src/test/java
+- ALL configuration files (application.yml, application.properties, *Config.java)
+- ALL batch components (Jobs, Steps, Readers, Processors, Writers, Listeners)
+- Build files (pom.xml / build.gradle)
+- Docker/K8s files if present
+
+Review Areas:
+1. Correctness — Business logic, null handling, data transformations
+2. Reliability — Restartability, idempotency, retry/skip policies, transactions
+3. Performance — Chunk size, memory, paging, N+1 queries, connection pooling
+4. Code Quality — SOLID, naming, duplication, complexity, testability
+5. Security — No hardcoded secrets, PII masking in logs, input validation
+6. Observability — Structured logging, correlation IDs, metrics
+7. Ops Readiness — Externalized config, graceful shutdown, rerun safety
+
+Output Format:
+
+1. Summary
+- Production Ready: ✅ Yes / ⚠️ Conditional / ❌ No
+- Top 3 Risks
+- Files Reviewed: [list all files scanned]
+
+2. Findings (for each issue found across ALL files)
+- Severity: 🔴 BLOCKER / 🟡 HIGH / 🟠 MEDIUM / 🟢 LOW
+- Category: Correctness / Reliability / Performance / Security / Quality / Observability / Ops
+- Location: File → Class → Method (line)
+- Problem: What's wrong
+- Impact: Why it matters
+- Fix: Code patch or replacement
+
+3. Spring Batch Checklist (✅/❌/⚠️ for each)
+- Idempotent writes (safe reruns)
+- Restartable jobs (JobRepository)
+- Chunk size optimized
+- Paging/streaming readers (no full load)
+- Retry/skip policies bounded
+- @StepScope/@JobScope thread-safe
+- Job parameters validated
+- Proper exit codes on failure
+- No heavy logic in listeners
+
+4. Code Quality Metrics
+- Total files reviewed
+- Issues by severity count
+- Issues by category count
+- Test coverage gaps
+
+5. What's Done Well
+- List positive observations per module/package
+
+6. Action Items (Priority Order)
+| # | File | Task | Severity | Effort |
+|---|------|------|----------|--------|
+
+Rules:
+- Review EVERY file in the repository
+- Provide code patches for top 5 issues
+- Mark uncertain items as ⚠️ Assumption
+- Do not stop for clarification
+- Trace one record end-to-end: read → process → write
+- Group findings by package/module for clarity
